@@ -1,0 +1,29 @@
+# Core
+python-dotenv==1.0.1
+pydantic==2.8.2
+pydantic-settings==2.4.0
+SQLAlchemy==2.0.32
+pandas==2.2.2
+tenacity==8.5.0
+
+# Orchestration
+langgraph==0.2.14
+langchain-core==0.2.38
+
+# Agent collaboration (optional - code degrades gracefully if unavailable)
+crewai==0.51.1
+
+# Ingestion
+requests==2.32.3
+beautifulsoup4==4.12.3
+feedparser==6.0.11
+
+# NLP / sentiment / trend / entity resolution
+scikit-learn==1.5.1
+nltk==3.8.1
+
+# RAG (lightweight - TF-IDF is default backend, these are optional upgrades)
+chromadb==0.5.5
+
+# CLI/reporting
+tabulate==0.9.0
