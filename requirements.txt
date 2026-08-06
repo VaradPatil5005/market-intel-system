@@ -1,0 +1,42 @@
+# Core
+python-dotenv==1.0.1
+pydantic==2.8.2
+pydantic-settings==2.4.0
+SQLAlchemy==2.0.32
+pandas==2.2.2
+tenacity==8.5.0
+
+# Orchestration
+langgraph==0.2.14
+langchain-core==0.2.38
+
+# Agent collaboration (optional - code degrades gracefully if unavailable)
+crewai==0.51.1
+
+# Ingestion
+requests==2.32.3
+beautifulsoup4==4.12.3
+feedparser==6.0.11
+
+# NLP / sentiment / trend / entity resolution
+scikit-learn==1.5.1
+nltk==3.8.1
+
+# Tier 1/2 upgrades — embeddings, anomaly detection, forecasting
+# All optional at runtime: each agent falls back to a classical/offline
+# method automatically if these aren't installed or a model can't be
+# downloaded (see agents/*.py docstrings for the specific fallback).
+sentence-transformers==3.0.1
+transformers==4.44.2
+torch==2.4.0
+
+# RAG (TF-IDF is the always-available default backend; chromadb + the
+# sentence-transformers embeddings above are the optional upgrade path)
+chromadb>=0.4.24,<0.5.0
+
+# Tier 3 — UI, alerting, browser-automation ingestion
+streamlit==1.38.0
+playwright==1.46.0
+
+# CLI/reporting
+tabulate==0.9.0

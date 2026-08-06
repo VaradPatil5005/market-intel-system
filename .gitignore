@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+storage/market_intel.db
+storage/checkpoints/*
+storage/chroma/*
+storage/logs/*
+exports/output/*
+!storage/checkpoints/.gitkeep
+!storage/chroma/.gitkeep
+!storage/logs/.gitkeep
+!exports/output/.gitkeep

@@ -1,0 +1,66 @@
+[
+  {
+    "source_name": "Reuters",
+    "source_type": "mock",
+    "url": "https://reuters.com/tech/nvidia-earnings-beat",
+    "title": "Nvidia beats earnings expectations on record AI chip demand",
+    "content": "Nvidia reported record revenue this quarter, beating analyst expectations as demand for AI chips continued to surge. The company raised its forward guidance, citing strong partnership momentum with major cloud providers.",
+    "published_at": "2026-07-30T09:15:00Z"
+  },
+  {
+    "source_name": "Bloomberg",
+    "source_type": "mock",
+    "url": "https://bloomberg.com/markets/microsoft-cloud-growth",
+    "title": "Microsoft cloud growth accelerates amid AI investment",
+    "content": "Microsoft posted strong growth in its cloud division, with executives pointing to AI-related workloads as a key driver. Analysts upgraded their outlook citing continued expansion and successful partnership deals.",
+    "published_at": "2026-07-30T11:00:00Z"
+  },
+  {
+    "source_name": "TechCrunch",
+    "source_type": "mock",
+    "url": "https://techcrunch.com/openai-lawsuit-update",
+    "title": "OpenAI faces new lawsuit over data practices",
+    "content": "OpenAI is facing a new lawsuit alleging improper data handling. The company denied wrongdoing, but the investigation raises concerns about regulatory risk ahead of upcoming policy reviews.",
+    "published_at": "2026-07-29T16:40:00Z"
+  },
+  {
+    "source_name": "CNBC",
+    "source_type": "mock",
+    "url": "https://cnbc.com/google-antitrust-warning",
+    "title": "Google warns of regulatory headwinds amid antitrust scrutiny",
+    "content": "Google issued a warning about potential regulatory headwinds as antitrust scrutiny intensifies. Executives flagged risk to advertising revenue if remedies are imposed following the ongoing investigation.",
+    "published_at": "2026-07-29T14:20:00Z"
+  },
+  {
+    "source_name": "The Verge",
+    "source_type": "mock",
+    "url": "https://theverge.com/anthropic-claude-expansion",
+    "title": "Anthropic expands Claude enterprise partnerships",
+    "content": "Anthropic announced new enterprise partnerships for its Claude models, citing strong growth and positive customer feedback. The company highlighted a milestone in enterprise adoption and continued investment in safety research.",
+    "published_at": "2026-07-31T08:00:00Z"
+  },
+  {
+    "source_name": "Reuters",
+    "source_type": "mock",
+    "url": "https://reuters.com/nvidia-supply-chain-risk",
+    "title": "Nvidia flags supply chain risk amid chip shortage concerns",
+    "content": "Nvidia executives flagged supply chain risk, warning of potential delays tied to chip shortages. The disclosure introduced some uncertainty despite otherwise strong quarterly results.",
+    "published_at": "2026-07-31T10:30:00Z"
+  },
+  {
+    "source_name": "mock-source.local",
+    "source_type": "mock",
+    "url": "https://mock-source.local/blogpost-1",
+    "title": "Random blog opinion about markets",
+    "content": "Some people think the market might go up, others think it might go down. Nobody really knows for sure what happens next in AI stocks.",
+    "published_at": "2026-06-01T00:00:00Z"
+  },
+  {
+    "source_name": "Reuters",
+    "source_type": "mock",
+    "url": "https://reuters.com/tech/nvidia-earnings-beat",
+    "title": "Nvidia beats earnings expectations on record AI chip demand",
+    "content": "Duplicate wire copy of the Nvidia earnings story, republished by a syndication partner with no new information.",
+    "published_at": "2026-07-30T09:15:00Z"
+  }
+]
