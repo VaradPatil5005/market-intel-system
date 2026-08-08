@@ -1,4 +1,4 @@
-# Multi-Agent Market Intelligence System
+# Multi-Agent Market Intelligence System.
 
 A production-style market intelligence platform that ingests real-time
 news/market data, validates source credibility, resolves entities across
