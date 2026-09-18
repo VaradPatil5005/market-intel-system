@@ -1,254 +1,361 @@
-# Multi-Agent Market Intelligence System
+<p align="center">
+  <img src="assets/banner.png" alt="SIGNALORA Multi-Agent Market Intelligence System" width="100%">
+</p>
 
-A production-style market intelligence platform that ingests real-time
-news/market data, validates source credibility, resolves entities across
-sources, analyzes sentiment and trends, retrieves historical context with
-RAG, scores confidence, logs every decision, checkpoints/recovers from
-failure, supports human-in-the-loop approval, and publishes a structured
-report plus Power BI-ready datasets.
+# SIGNALORA ☤
+### Institutional Multi-Agent Autonomous Market Intelligence & Trading Strategy OS
+<p align="center">
+  <a href="#system-architecture">Architecture</a> •
+  <a href="#32-autonomous-agent-matrix">Agent Matrix</a> •
+  <a href="#quickstart">Quickstart</a> •
+  <a href="#dual-interface-ecosystem">Terminal & API</a> •
+  <a href="#closed-loop-self-learning">Self-Learning Loop</a> •
+  <a href="#voice-ai--biometrics">KIM Voice AI</a>
+</p>
 
-Built with **Python, LangGraph, CrewAI, SQLAlchemy/SQL, and Power BI-ready
-CSV exports**. Runs fully offline out of the box using bundled mock data —
-no API keys required to see the whole pipeline work end to end.
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.11+">
+  <img src="https://img.shields.io/badge/Orchestration-LangGraph%20%7C%20CrewAI-FF6B6B?style=for-the-badge" alt="LangGraph & CrewAI">
+  <img src="https://img.shields.io/badge/Tests-99%2F99%20Passing-brightgreen?style=for-the-badge" alt="99/99 Tests Passing">
+  <img src="https://img.shields.io/badge/UI-Streamlit%20Institutional%20Blackbox-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Streamlit UI">
+  <img src="https://img.shields.io/badge/API-FastAPI%20Async-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI">
+  <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="License: MIT">
+  <a href="https://github.com/VaradPatil5005/market-intel-system"><img src="https://img.shields.io/badge/Built%20by-Varad%20Patil-blueviolet?style=for-the-badge" alt="Built by Varad Patil"></a>
+</p>
 
----
+**SIGNALORA** is an institutional-grade, multi-agent market intelligence platform that continuously ingests global news feeds, alternative data, order-flow telemetry, SEC regulatory filings, and market prices to synthesize validated, actionable macro signals. 
 
-## Key features
-
-- **Ingestion** from RSS feeds/news APIs, with automatic fallback to
-  bundled mock/seed data when no live source is configured or reachable.
-- **Source credibility scoring** — domain trust, recency, completeness,
-  and duplicate detection, with automatic rejection of low-quality sources.
-- **Entity resolution** — extracts and merges companies/products/topics
-  across sources into canonical entities using normalized + fuzzy matching.
-- **Sentiment analysis** — lexicon-based polarity scoring per entity/source.
-- **Trend analysis** — keyword-spike detection compared against stored
-  historical averages (rising / falling / stable / anomalous).
-- **RAG insight agent** — TF-IDF retrieval over historical report notes to
-  surface "this looks like a pattern we've seen before" insights.
-- **Confidence scoring** — combines source quality, cross-source agreement,
-  recency, and completeness into a 0–1 score per insight; flags weak ones.
-- **Supervisor (LangGraph)** — routes conditionally on missing data, low
-  confidence, or conflicting evidence; supports human-in-the-loop approval.
-- **CrewAI synthesis layer** — an optional "analyst crew" (Research Analyst
-  → Risk Analyst → Editor) turns insights into a narrative memo when an LLM
-  key is configured; otherwise falls back to a deterministic summary so the
-  pipeline never depends on external APIs to run.
-- **Audit logging** — every agent decision, score, and action is logged to
-  both a JSON-lines file and the `audit_logs` SQL table.
-- **Checkpointing & recovery** — graph state is snapshotted after every
-  major step (SQL + disk); a failed run can resume from the last checkpoint.
-- **Observability** — per-agent runtime, failure rate, source usage,
-  confidence distribution, insights produced, and human approval counts.
-- **Power BI export** — every table exported to clean, stable-named CSVs.
+Unlike naive LLM wrappers, SIGNALORA features a **stateful LangGraph Directed Acyclic Graph (DAG)** with **32 specialized autonomous agents**, a **closed-loop self-learning engine (inspired by Nous Research Hermes)** that creates procedural trading skills from experience, a **forensic SEC 10-Q discrepancy auditor**, **Wav2Vec 2.0 voice biometrics**, and **KIM (Knowledge & Intelligence Model)** — an executive voice AI delivering instant 16-bit acoustic intelligence briefings.
 
 ---
 
-## Architecture
+<table>
+<tr>
+  <td width="30%"><b>Autonomous Multi-Agent Matrix</b></td>
+  <td><b>32 specialized domain agents</b> executing concurrently across ingestion, domain credibility filtering, entity resolution, geopolitical chokepoints, forensic accounting, RAG, and execution routing.</td>
+</tr>
+<tr>
+  <td><b>Stateful LangGraph DAG</b></td>
+  <td>Deterministic, fault-tolerant execution graph with full checkpointing, rollback, conditional routing, and <b>0-error strict typing</b> across all pipeline states.</td>
+</tr>
+<tr>
+  <td><b>KIM Voice AI & Biometrics</b></td>
+  <td>Executive voice strategist built on native 16-bit Windows SAPI female synthesizer + Wav2Vec 2.0 KAN voiceprint biometric authentication with acoustic anti-spoofing.</td>
+</tr>
+<tr>
+  <td><b>Closed-Loop Self-Learning</b></td>
+  <td>Autonomous reflection and dynamic procedural skill synthesis. Automatically creates, refines, and executes modular skills (carry trade unwinds, chokepoint hedging, microstructure TCA).</td>
+</tr>
+<tr>
+  <td><b>Forensic SEC Discrepancy Auditor</b></td>
+  <td>Scans 10-K/10-Q regulatory filings to detect divergences between non-GAAP narrative reporting and GAAP balance-sheet cash flows, revenue recognition anomalies, and insider churn.</td>
+</tr>
+<tr>
+  <td><b>Vibe Quant Confluence</b></td>
+  <td>Synthesizes social media sentiment delta with microstructure liquidity book skews, options open-interest shifts, and dark pool prints to identify high-probability squeeze vectors.</td>
+</tr>
+<tr>
+  <td><b>Institutional Dual Interface</b></td>
+  <td><b>Streamlit Bloomberg-style Blackbox Terminal</b> (real-time telemetry, ticker tape, interactive global supply chain map) + <b>FastAPI High-Concurrency Async API</b>.</td>
+</tr>
+<tr>
+  <td><b>Audited Human-in-the-Loop</b></td>
+  <td>Non-blocking review queue gating low-confidence or high-risk signals with real-time operator approval, persistent audit trails, and automatic supervisor feedback loops.</td>
+</tr>
+</table>
+
+---
+
+## System Architecture
 
 ```
-                         ┌────────────────────┐
-                         │   Supervisor /      │
-                         │  LangGraph workflow  │
-                         └─────────┬────────────┘
-                                   │
-   ┌───────────┐   ┌────────────────┐   ┌─────────────────┐   ┌────────────┐
-   │ Ingestion │──▶│  Credibility    │──▶│ Entity Resolution │──▶│ Sentiment  │
-   └───────────┘   └────────────────┘   └─────────────────┘   └─────┬──────┘
-                                                                      │
-   ┌────────────┐   ┌───────────────┐   ┌───────────────────┐        │
-   │  Report Gen │◀──│  Confidence   │◀──│  RAG Insight       │◀───────┘
-   └──────┬─────┘    │  Scoring +    │   │  (TF-IDF retrieval) │
-          │           │  synthesis    │   └───────────────────┘
-          ▼           └───────┬───────┘             ▲
-   Power BI / CSV             │                      │
-   exports + audit    ┌───────▼────────┐    ┌────────┴────────┐
-   logs + checkpoints │ Human-in-the-  │    │  Trend Analysis  │
-                       │ loop approval  │    └─────────────────┘
-                       └────────────────┘
+                                  ┌──────────────────────────────────────────────┐
+                                  │           SIGNALORA SUPERVISOR               │
+                                  │      (LangGraph Stateful DAG Engine)         │
+                                  └──────────────────────┬───────────────────────┘
+                                                         │
+         ┌───────────────────────────────────────────────┴───────────────────────────────────────────────┐
+         ▼                                               ▼                                               ▼
+┌──────────────────┐                           ┌──────────────────┐                            ┌───────────────────┐
+│  LIVE INGESTION  │                           │   DEEP RESEARCH  │                            │ FORENSIC AUDITING │
+│  • RSS News Wire │                           │  • SerpAPI & DDG │                            │  • SEC 10-Q / 10-K│
+│  • CoinGecko     │                           │  • Vector RAG    │                            │  • GAAP Divergence│
+│  • Yahoo Finance │                           │  • ChromaDB TFIDF│                            │  • Chokepoint Risk│
+└────────┬─────────┘                           └────────┬─────────┘                            └─────────┬─────────┘
+         │                                              │                                                │
+         ▼                                              ▼                                                ▼
+┌──────────────────┐                           ┌──────────────────┐                            ┌───────────────────┐
+│ CREDIBILITY GATE │                           │ CONFIDENCE ENGINE│                            │ VIBE QUANT ENGINE │
+│  • Domain Trust  │                           │  • Bayesian Gate │                            │  • Social Velocity│
+│  • Spoof Filter  │                           │  • Source Confl. │                            │  • Order Book Skew│
+└────────┬─────────┘                           └────────┬─────────┘                            └─────────┬─────────┘
+         │                                              │                                                │
+         └──────────────────────────────────────────────┼────────────────────────────────────────────────┘
+                                                        │
+                                                        ▼
+                                       ┌───────────────────────────────────┐
+                                       │      SUPERVISOR DECISION GATE     │
+                                       └────────────────┬──────────────────┘
+                                                        │
+                                  ┌─────────────────────┴─────────────────────┐
+                                  ▼                                           ▼
+                   ┌───────────────────────────────┐           ┌───────────────────────────────┐
+                   │   CONFIDENCE ≥ THRESHOLD      │           │   LOW CONFIDENCE / ANOMALOUS  │
+                   │   (Automated Fast-Path)       │           │   (Human-in-the-Loop Gate)    │
+                   └──────────────┬────────────────┘           └──────────────┬────────────────┘
+                                  │                                           │
+                                  │                                           ▼
+                                  │                            ┌───────────────────────────────┐
+                                  │                            │      HUMAN REVIEW QUEUE       │
+                                  │                            │   Pending Operator Decision   │
+                                  │                            └──────────────┬────────────────┘
+                                  │                                           │ (Approved)
+                                  ├───────────────────────────────────────────┘
+                                  ▼
+                   ┌───────────────────────────────┐
+                   │    GROUNDING VERIFICATION     │ ◄── [Reflexion Agent & Anti-Hallucination]
+                   └──────────────┬────────────────┘
+                                  │
+                                  ▼
+                   ┌───────────────────────────────┐
+                   │      INSTITUTIONAL MEMO       │
+                   │  • CrewAI Synthesis Layer     │
+                   │  • KIM Executive Voice Synth  │
+                   │  • Power BI & CSV Export Hub  │
+                   │  • Autonomous Skill Engine    │
+                   └───────────────────────────────┘
 ```
-
-Every node runs inside its own DB session, writes an audit-log row, records
-timing/metrics, and saves a checkpoint before control passes to the next
-node — so the workflow is fully traceable and resumable.
 
 ---
 
-## Folder structure
+## 32 Autonomous Agent Matrix
+
+SIGNALORA distributes analysis across a specialized matrix of autonomous agents:
+
+| Category | Agent | Primary Intelligence Function |
+| :--- | :--- | :--- |
+| **Ingestion & Data** | [`IngestionAgent`](agents/ingestion_agent.py) | High-throughput RSS, JSON, and financial stream parsing with fallback. |
+| | [`LiveNewsAgent`](agents/live_news_agent.py) | Dynamic multi-source market news collection across crypto, equities, and FX. |
+| | [`PriceDataAgent`](agents/price_data_agent.py) | Real-time quote enrichment, SMA-20/50, RSI-14, volatility, and VWAP. |
+| **Trust & Verification**| [`CredibilityAgent`](agents/credibility_agent.py) | Domain authority grading, recency decay penalization, and anti-spoof checks. |
+| | [`GroundingGateAgent`](agents/grounding_gate_agent.py) | Strict citation verification preventing hallucinations in generated output. |
+| | [`ReflexionAgent`](agents/reflexion_agent.py) | Self-critique engine checking reasoning bounds and statistical plausibility. |
+| **Semantic & Context** | [`EntityResolutionAgent`](agents/entity_resolution_agent.py) | Normalizes company names, tickers, and token addresses across dirty text. |
+| | [`SentimentAgent`](agents/sentiment_agent.py) | Lexicon and contextual sentiment scoring per entity. |
+| | [`TrendAgent`](agents/trend_agent.py) | Statistical z-score keyword spike detection against historical baselines. |
+| | [`RAGAgent`](agents/rag_agent.py) | ChromaDB vector and TF-IDF similarity recall over historical market precedents. |
+| | [`DeepSearchAgent`](agents/deep_search_agent.py) | Multi-hop external web search for breaking corporate announcements. |
+| **Forensic & Macro** | [`DiscrepancyAuditorAgent`](agents/discrepancy_auditor_agent.py) | SEC 10-Q forensic parser detecting revenue vs cash flow divergence. |
+| | [`GeopoliticalRiskAgent`](agents/geopolitical_risk_agent.py) | Maritime chokepoint monitor (Hormuz, Malacca, Taiwan Strait, Bab-el-Mandeb). |
+| | [`MacroRatesAgent`](agents/macro_rates_agent.py) | Sovereign yields, Fed futures, 2Y/10Y inversion tracking, and terminal rates. |
+| | [`GlobalMacroAgent`](agents/global_macro_agent.py) | Cross-asset macro regime monitor (DXY, WTI crude, Dr. Copper, gold). |
+| **Alpha & Strategy** | [`VibeQuantAgent`](agents/vibe_quant_agent.py) | Social retail sentiment velocity vs market microstructure confluence. |
+| | [`LiquidityOrderFlowAgent`](agents/liquidity_order_flow_agent.py) | Level-2 book skew, bid/ask imbalance, and institutional dark pool prints. |
+| | [`MarketCorrelationAgent`](agents/market_correlation_agent.py) | Dynamic rolling covariance matrices and cross-sector beta shifts. |
+| | [`ForecastingAgent`](agents/forecasting_agent.py) | Multi-horizon directional forecasts with asymmetric confidence intervals. |
+| | [`CompetitorAgent`](agents/competitor_agent.py) | Peer group margin benchmarking and competitive moat threat detection. |
+| | [`RiskSentinelAgent`](agents/risk_sentinel_agent.py) | Value-at-Risk (VaR), tail risk hedging bounds, and maximum drawdown limits. |
+| | [`ExecutionRouterAgent`](agents/execution_router_agent.py) | Algorithmic routing (TWAP, VWAP, POV) and transaction cost analysis (TCA). |
+| **Voice & Biometrics** | [`KimVoiceAgent`](agents/kim_voice_agent.py) | High-definition female executive voice briefing generator (Windows SAPI). |
+| | [`FridayVoiceAgent`](agents/friday_voice_agent.py) | Conversational voice intelligence interface. |
+| | [`VoiceSecurityAgent`](agents/voice_security_agent.py) | Wav2Vec 2.0 acoustic voiceprint registration and biometric auth. |
+| **Learning & Synthesis**| [`HermesSelfLearningAgent`](agents/hermes_self_learning_agent.py) | Autonomous closed-loop skill creation, execution tuning, and persistent recall. |
+| | [`ReportAgent`](agents/report_agent.py) | Generates structured Markdown and JSON intelligence dossiers. |
+| | [`ExecutionRouterAgent`](agents/execution_router_agent.py) | Routes trade requests to simulated execution venue with slippage modeling. |
+
+---
+
+## Closed-Loop Self-Learning
+
+Inspired by the self-evolving architecture of Nous Research's Hermes Agent, SIGNALORA features an autonomous procedural skill synthesis loop located in [`skills/`](skills/):
+
+```
+       ┌────────────────────────┐
+       │   Market Pipeline Run  │
+       └───────────┬────────────┘
+                   │  Outcomes & Metrics
+                   ▼
+       ┌────────────────────────┐
+       │     Reflexion Agent    │ ───► Evaluates prediction vs realized reality
+       └───────────┬────────────┘
+                   │  Identifies strategic gaps
+                   ▼
+       ┌────────────────────────┐
+       │  Hermes Learning Agent │ ───► Synthesizes new executable Python Skill
+       └───────────┬────────────┘
+                   │  Registers into Skill Registry
+                   ▼
+       ┌────────────────────────┐
+       │   Active Skill Suite   │
+       │ • Carry Trade Unwind   │
+       │ • Chokepoint Hedging   │
+       │ • SEC Discrepancy      │
+       │ • Vibe Quant Confluence│
+       │ • Microstructure TCA   │
+       └────────────────────────┘
+```
+
+Skills are stored as modular Python modules implementing `BaseSkill`, dynamically loaded at runtime by the `SkillRegistry`, with persistent execution memories saved in `storage/memory/MEMORY.md`.
+
+---
+
+## Voice AI & Biometrics
+
+### KIM (Knowledge & Intelligence Model)
+SIGNALORA includes **KIM**, a dedicated voice AI executive strategist:
+- **Audio Architecture**: High-fidelity 16-bit, 16,000Hz speech engine leveraging native Windows SAPI voices (Microsoft Zira / Hazel / David) with graceful algorithmic wav synthesis fallback.
+- **Executive Voice Briefings**: Generates spoken morning and intraday market intelligence memos downloadable directly through the Streamlit dashboard or FastAPI stream.
+
+### Wav2Vec 2.0 Voice Biometrics
+Security is guaranteed through acoustic speaker identification:
+- Enrolls operator voiceprints via acoustic mel-frequency extraction.
+- Prevents unauthorized command execution through cosine distance verification and ambient noise floor anti-spoofing.
+
+---
+
+## Dual-Interface Ecosystem
+
+SIGNALORA delivers two concurrent local interfaces designed for research and execution:
+
+### 1. Streamlit Institutional Terminal (`http://localhost:8501`)
+- **Cyberpunk Blackbox Aesthetics**: Deep charcoal (`#0a0b0e`) and golden amber (`#f39c12`) color tokens.
+- **Real-Time Ticker Tape**: Continuously streaming asset quotes, percentage shifts, and sentiment labels.
+- **Interactive Global Supply Chain Map**: Renders real-time status across maritime trade chokepoints.
+- **Human Review Center**: Instant one-click approval or rejection of quarantined market alerts.
+- **Embedded Audio Player**: Stream and replay KIM's voice intelligence briefings directly in the browser.
+
+### 2. FastAPI Research Desk (`http://127.0.0.1:8080`)
+High-concurrency async REST API with interactive Swagger docs at `http://127.0.0.1:8080/docs`:
+- `POST /api/run`: Trigger full or partial pipeline runs with custom parameters.
+- `GET /api/dashboard`: Fetch live telemetry, confidence distributions, and recent insights.
+- `GET /api/review-queue`: Inspect all alerts awaiting human operator decision.
+- `POST /api/review-queue/{queue_id}/decision`: Submit approval or rejection with audit commentary.
+- `POST /api/voice-briefing`: Generate on-demand KIM audio briefings for any ticker.
+
+---
+
+## Quickstart
+
+### Prerequisites
+- Python 3.11 or higher
+- Git
+- Windows (native SAPI voice support) / Linux / macOS
+
+### 1. Clone & Setup Environment
+
+```bash
+git clone https://github.com/VaradPatil5005/market-intel-system.git
+cd market-intel-system
+
+# Create and activate virtual environment
+python -m venv venv
+.\venv\Scripts\activate   # On Windows
+# source venv/bin/activate # On Linux/macOS
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### 2. Initialize Database & Seed
+
+```bash
+python scripts/migrate_db.py
+```
+
+### 3. Launch Local Servers
+
+In PowerShell / Terminal 1 (Streamlit UI):
+```powershell
+.\venv\Scripts\streamlit run ui/app.py --server.port 8501
+```
+
+In PowerShell / Terminal 2 (FastAPI Backend):
+```powershell
+.\venv\Scripts\python -m uvicorn api.main:app --port 8080 --reload
+```
+
+Open:
+- **Terminal UI**: [http://localhost:8501](http://localhost:8501)
+- **API Swagger Docs**: [http://127.0.0.1:8080/docs](http://127.0.0.1:8080/docs)
+
+---
+
+## Running Verification & Tests
+
+SIGNALORA comes with a comprehensive test suite covering unit behaviors, state transitions, voice biometrics, and pipeline resilience:
+
+```bash
+pytest -v
+```
+
+```
+============================== 99 passed in 25.79s ==============================
+```
+
+All 99 tests pass out of the box with zero external network or API key requirements.
+
+---
+
+## CLI Usage
+
+Run a headless end-to-end market intelligence pipeline directly from the command line:
+
+```bash
+# Execute standard pipeline run
+python main.py
+
+# Force human review threshold override
+python main.py --min-confidence 0.85
+
+# Export reports and Power BI CSVs
+python main.py --export-powerbi
+```
+
+---
+
+## Repository Structure
 
 ```
 market-intel-system/
-├── main.py                      # entry point — runs the full pipeline
-├── requirements.txt
-├── .env.example
-├── agents/                      # one independent, testable module per agent
-│   ├── base.py                  # shared logging/audit/metrics plumbing
-│   ├── ingestion_agent.py
-│   ├── credibility_agent.py
-│   ├── entity_resolution_agent.py
-│   ├── sentiment_agent.py
-│   ├── trend_agent.py
-│   ├── rag_agent.py
-│   ├── confidence_agent.py
-│   └── report_agent.py
-├── orchestration/
-│   ├── state.py                 # shared LangGraph state schema
-│   ├── graph.py                 # LangGraph workflow wiring
-│   ├── supervisor.py            # conditional routing logic
-│   ├── human_in_loop.py         # approval gate
-│   ├── checkpointing.py         # save/load/resume checkpoints
-│   └── crew_tasks.py            # CrewAI synthesis crew (+ offline fallback)
-├── database/
-│   ├── schema.sql                # SQLite-friendly, Postgres-portable schema
-│   ├── models.py                  # SQLAlchemy ORM models
-│   └── session.py                 # session + generic repository layer
-├── utils/
-│   ├── config.py                  # typed settings (pydantic-settings)
-│   ├── logging_setup.py           # console + JSON-lines structured logging
-│   ├── metrics.py                 # observability metrics collector
-│   └── helpers.py                 # text/date/retry/JSON utilities
-├── exports/
-│   ├── csv_export.py
-│   ├── powerbi_export.py
-│   └── report_format.py
-├── data/
-│   ├── seed/news_batch_1.json      # bundled mock ingestion data
-│   └── historical_reports/*.md      # sample docs the RAG agent retrieves from
-├── storage/
-│   ├── market_intel.db              # SQLite database (created on first run)
-│   ├── checkpoints/<run_id>/*.json   # on-disk checkpoint mirror
-│   └── logs/agent_events.jsonl       # structured audit/event log
-└── tests/
-    └── test_pipeline.py              # smoke test for the full pipeline
+├── assets/
+│   └── banner.png                # SIGNALORA visual brand identity
+├── agents/                       # 32 Autonomous Intelligence Agents
+│   ├── base.py                   # Abstract agent base class
+│   ├── kim_voice_agent.py        # KIM voice synthesizer & strategist
+│   ├── voice_security_agent.py   # Voice biometric authentication
+│   ├── hermes_self_learning_agent.py # Closed-loop skill creator
+│   ├── discrepancy_auditor_agent.py  # SEC 10-Q forensic analyzer
+│   ├── geopolitical_risk_agent.py    # Maritime chokepoint monitor
+│   ├── vibe_quant_agent.py       # Retail vibe vs book skew confluence
+│   └── ...                       # Remaining specialized agents
+├── orchestration/                # LangGraph Stateful Pipeline
+│   ├── graph.py                  # Compiled state graph (0 typing errors)
+│   ├── state.py                  # Typed PipelineState definitions
+│   ├── supervisor.py             # Conditional routing & decision rules
+│   └── crew_tasks.py             # CrewAI analyst synthesis team
+├── skills/                       # Self-Learned Dynamic Trading Skills
+│   ├── skill_registry.py         # Autonomous skill execution manager
+│   ├── carry_trade_unwind_skill.py
+│   ├── chokepoint_hedging_skill.py
+│   ├── sec_discrepancy_skill.py
+│   └── vibe_quant_confluence_skill.py
+├── ui/                           # Streamlit Institutional Blackbox UI
+│   ├── app.py                    # Multi-page dashboard
+│   └── blackbox_theme.py         # Institutional design system
+├── api/                          # FastAPI Async REST Endpoints
+│   └── main.py                   # High-throughput API & review queue
+├── database/                     # SQLAlchemy Models & SQLite Engine
+│   ├── models.py                 # Structured schema definitions
+│   └── session.py                # Connection pool & context managers
+├── tests/                        # 99 Comprehensive Pytest Tests
+├── storage/                      # Persistent state, memory & logs
+└── utils/                        # Logging, resilience & market data
 ```
 
 ---
 
-## Setup
+## License
 
-```bash
-cd market-intel-system
-python3 -m venv .venv && source .venv/bin/activate   # optional but recommended
-pip install -r requirements.txt
-cp .env.example .env      # edit if you want live feeds / an LLM key
-```
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
 
-`crewai` and `chromadb` have overlapping dependency ranges; if your resolver
-complains, install everything except `crewai==0.51.1` first, then install
-`crewai` separately. The code works with either installed or missing — see
-"Optional dependencies" below.
-
-## Environment variables
-
-| Variable | Purpose | Default |
-|---|---|---|
-| `DATABASE_URL` | SQLAlchemy connection string | local SQLite file |
-| `CHECKPOINT_DIR`, `CHROMA_DIR`, `EXPORT_DIR`, `LOG_DIR` | output paths | `storage/...`, `exports/output` |
-| `MAX_RETRIES`, `RETRY_BACKOFF_SECONDS` | ingestion retry policy | `3`, `2` |
-| `NEWS_RSS_FEEDS` | comma-separated RSS URLs | empty → uses mock seed data |
-| `COMPANY_WATCHLIST` | comma-separated company names to track | `OpenAI,Anthropic,Nvidia,Microsoft,Google` |
-| `LOW_CONFIDENCE_THRESHOLD` | below this, an insight is flagged | `0.55` |
-| `HUMAN_REVIEW_REQUIRED_BELOW` | below this avg confidence, pause for review | `0.65` |
-| `NEWSAPI_KEY`, `OPENAI_API_KEY` | optional; system runs fully mocked without them | empty |
-
-## How to run the pipeline
-
-```bash
-python main.py
-```
-
-This will:
-1. Initialize the SQLite database (`storage/market_intel.db`) if needed.
-2. Run the full LangGraph workflow once (ingest → … → report).
-3. Print the formatted report, the CrewAI/deterministic narrative synthesis,
-   the run's observability summary, and the checkpoints saved.
-4. Write Power BI-ready CSVs to `exports/output/` and save the report as
-   both JSON and readable text.
-
-Run it again to see entity merging accumulate and trend comparisons use
-real historical averages (the first run has no history to compare against,
-so trends start out labeled "stable").
-
-### Sample workflow
-
-```
-$ python main.py
-...
-MARKET INTELLIGENCE REPORT
-EXECUTIVE SUMMARY
-This cycle tracked 12 entities, most active: Nvidia, Microsoft, OpenAI,
-Google, Anthropic. 0 notable trend(s) and 0 risk signal(s) were detected.
-5 entities showed a meaningful sentiment shift. Overall insight confidence
-for this run: 0.73.
-...
---- Files written ---
-  csv: exports/output/raw_sources.csv
-  csv: exports/output/entities.csv
-  ...
-  report (text): exports/output/report_run_xxxxxxxx.txt
-```
-
-### Forcing the human-in-the-loop path
-
-```bash
-HUMAN_REVIEW_REQUIRED_BELOW=0.99 python main.py
-```
-
-Any run's average confidence will fall below `0.99`, so the supervisor
-routes to `human_review` before publishing — demonstrating the pause,
-summary, and approval/rejection logging.
-
-### Resuming from a checkpoint
-
-```python
-from database.session import get_session
-from orchestration.checkpointing import load_latest_checkpoint
-
-with get_session() as session:
-    state = load_latest_checkpoint(session, run_id="run_xxxxxxxx")
-```
-
-`state` is the exact JSON snapshot saved after the last successful node —
-use it to re-seed a `PipelineState` and re-invoke the graph from there
-after fixing whatever caused a node to fail.
-
----
-
-## Database tables
-
-`raw_sources`, `entities`, `sentiment_results`, `trend_results`, `insights`,
-`confidence_scores`, `audit_logs`, `checkpoints`, `report_exports`,
-`agent_metrics` — see `database/schema.sql` for full column definitions,
-indexes, and foreign keys. SQLite by default; swap `DATABASE_URL` to a
-PostgreSQL DSN for production (schema uses portable types throughout).
-
-## How the Power BI export works
-
-`exports/powerbi_export.export_all_for_powerbi(session)` reads every table
-above via the generic `Repository`, converts rows to dicts, and writes one
-CSV per table to `EXPORT_DIR` with stable filenames (`entities.csv`,
-`insights.csv`, …). Point Power BI's "Folder" or "Text/CSV" connector at
-that folder and refresh — filenames never change, so scheduled refreshes
-just work. `agent_metrics.csv` powers the observability dashboard (runtime,
-failure rate, confidence distribution, human approvals/rejections).
-
-## Optional dependencies / graceful degradation
-
-The system is designed so that missing optional pieces never crash the
-pipeline — they just degrade to a deterministic fallback:
-
-- **No RSS feeds configured / unreachable** → ingestion uses `data/seed/*.json`.
-- **`crewai` not installed, or no `OPENAI_API_KEY`** → the synthesis step
-  uses a deterministic, template-based summary instead of a live Crew.
-- **`chromadb` not installed** → RAG retrieval uses TF-IDF + cosine
-  similarity (scikit-learn) instead of a persistent vector store.
-
-## Future improvements
-
-- Swap the lexicon-based sentiment scorer for a transformer model.
-- Add a browser-automation ingestion connector for JS-heavy sites.
-- Add anomaly detection (e.g. z-score/EWMA) on top of the trend agent.
-- Add a Streamlit/web UI for human-in-the-loop review instead of the
-  deterministic auto-reviewer used in this demo.
-- Add alerting (email/Slack) for high-confidence, high-impact insights.
-- Swap the entity resolver's fuzzy matcher for embedding-based similarity.
+Built by **[Varad Patil](https://github.com/VaradPatil5005)**.

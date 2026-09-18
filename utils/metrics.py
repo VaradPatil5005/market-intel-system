@@ -74,10 +74,10 @@ class MetricsCollector:
     def record_insight(self, count: int = 1) -> None:
         self.insights_produced += count
 
-    def record_human_decision(self, approved: bool) -> None:
-        if approved:
+    def record_human_decision(self, approved: bool | None) -> None:
+        if approved is True:
             self.human_approvals += 1
-        else:
+        elif approved is False:
             self.human_rejections += 1
 
     # ----------------------------------------------------------------

@@ -1,12 +1,34 @@
+# Byte-compiled / optimized / DLL files
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
 .venv/
+env/
+.env/
+
+# Environment variables & secrets
 .env
-storage/market_intel.db
+
+# Testing & cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local databases & checkpoints
+storage/market_intel.db*
 storage/checkpoints/*
 storage/chroma/*
 storage/logs/*
+storage/audio/*
+storage/*.wav
 exports/output/*
+backups/
+scratch_tail.txt
+
+# Keep gitkeeps
 !storage/checkpoints/.gitkeep
 !storage/chroma/.gitkeep
 !storage/logs/.gitkeep

@@ -52,6 +52,15 @@ def to_readable_text(report: ReportExport) -> str:
     _section("RISK SIGNALS", "risk_signals")
     _section("HISTORICAL CONTEXT (RAG)", "historical_context")
 
+    lines.append("PREDICTIVE OUTLOOK")
+    lines.append("-" * 78)
+    outlook = data.get("predictive_outlook") or []
+    if not outlook:
+        lines.append("  (no entities available to forecast this cycle)")
+    for item in outlook:
+        lines.append(f"  - {item['text']}")
+    lines.append("")
+
     lines.append("RECOMMENDED ACTIONS")
     lines.append("-" * 78)
     for action in data.get("recommended_actions", []):

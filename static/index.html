@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Market Intel — Research Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-top">
+    <div class="brand">
+      <span class="brand-mark">MI</span>
+      <div>
+        <h1>Market Intelligence Desk</h1>
+        <p class="brand-sub">Multi-agent research pipeline · LangGraph · RAG</p>
+      </div>
+    </div>
+    <div class="masthead-actions">
+      <button id="run-btn" class="btn-primary">Run new analysis</button>
+      <span id="run-status" class="run-status"></span>
+    </div>
+  </div>
+  <div class="ticker" id="watchlist-ticker">Loading watchlist…</div>
+</header>
+
+<section class="stat-strip" id="stat-strip">
+  <div class="stat"><span class="stat-value" id="stat-runs">—</span><span class="stat-label">Runs completed</span></div>
+  <div class="stat"><span class="stat-value" id="stat-confidence">—</span><span class="stat-label">Avg. confidence</span></div>
+  <div class="stat"><span class="stat-value" id="stat-entities">—</span><span class="stat-label">Entities tracked</span></div>
+  <div class="stat"><span class="stat-value" id="stat-trends">—</span><span class="stat-label">Trend signals</span></div>
+  <div class="stat"><span class="stat-value" id="stat-insights">—</span><span class="stat-label">Insights generated</span></div>
+</section>
+
+<main class="layout">
+  <section class="report-column">
+    <h2 class="section-title">Latest report</h2>
+    <article id="report-card" class="report-card">
+      <p class="empty-state">No report yet — run the pipeline to generate one. In mock mode this uses seeded sample data, so it's safe to run immediately.</p>
+    </article>
+
+    <h2 class="section-title">Pipeline</h2>
+    <ol class="pipeline-list" id="pipeline-list">
+      <li data-node="ingest">Ingest sources</li>
+      <li data-node="score_credibility">Score credibility</li>
+      <li data-node="resolve_entities">Resolve entities</li>
+      <li data-node="analyze_sentiment">Analyze sentiment</li>
+      <li data-node="analyze_trends">Analyze trends</li>
+      <li data-node="rag_retrieval">RAG retrieval</li>
+      <li data-node="score_confidence">Score confidence</li>
+      <li data-node="forecast_trends">Forecast trends</li>
+      <li data-node="generate_report">Generate report</li>
+    </ol>
+  </section>
+
+  <aside class="side-column">
+    <h2 class="section-title">Top entities</h2>
+    <table class="ledger" id="entity-table">
+      <tbody><tr><td class="empty-state" colspan="3">—</td></tr></tbody>
+    </table>
+
+    <h2 class="section-title">Recent trend signals</h2>
+    <table class="ledger" id="trend-table">
+      <tbody><tr><td class="empty-state" colspan="2">—</td></tr></tbody>
+    </table>
+
+    <h2 class="section-title">Recent sentiment</h2>
+    <table class="ledger" id="sentiment-table">
+      <tbody><tr><td class="empty-state" colspan="2">—</td></tr></tbody>
+    </table>
+  </aside>
+</main>
+
+<footer class="site-footer">
+  <p>Python · LangGraph · ChromaDB · SQLAlchemy · FastAPI — deployable free on Render/Railway.</p>
+</footer>
+
+<script src="/assets/app.js"></script>
+</body>
+</html>

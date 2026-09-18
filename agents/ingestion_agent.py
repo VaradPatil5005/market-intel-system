@@ -5,6 +5,16 @@ Fetches raw market/news content from RSS feeds, company sources, or
 (when no live sources are configured / reachable) falls back to bundled
 mock/seed data so the pipeline always has something to process.
 Normalizes everything into a common record shape before persistence.
+
+Tier 3 upgrade: optionally adds a Playwright-based headless-browser
+scraper (`settings.use_playwright_ingestion`) for JS-heavy news portals
+that render their article content client-side, which plain
+`requests`/RSS parsing can't see at all. This is opt-in (off by default)
+because it requires `pip install playwright && playwright install chromium`
+— a much heavier dependency than the rest of this project. If Playwright
+isn't installed, its browser binaries aren't installed, or a page fails
+to render/timeout, this silently falls back to RSS + mock seed data —
+ingestion never hard-fails because of it.
 """
 from __future__ import annotations
 
@@ -38,7 +48,8 @@ class IngestionAgent(BaseAgent):
 
     # ------------------------------------------------------------------
     def run(self, session: Session) -> List[RawSource]:
-        """Fetch from configured feeds; fall back to mock seed data."""
+        """Fetch from configured feeds (+ optional Playwright URLs); fall
+        back to mock seed data if nothing else produced records."""
         with self.run_tracked("ingest"):
             records: List[Dict[str, Any]] = []
 
@@ -46,6 +57,14 @@ class IngestionAgent(BaseAgent):
             if feeds:
                 for feed_url in feeds:
                     records.extend(self._fetch_rss_safe(feed_url))
+
+            playwright_urls = settings.playwright_url_list if settings.use_playwright_ingestion else []
+            playwright_backend_used = False
+            if playwright_urls:
+                pw_records = self._fetch_with_playwright_safe(playwright_urls)
+                if pw_records:
+                    playwright_backend_used = True
+                    records.extend(pw_records)
 
             if not records:
                 self.logger.info("No live sources configured/reachable — using mock seed data.")
@@ -62,8 +81,8 @@ class IngestionAgent(BaseAgent):
                 session,
                 step="ingest",
                 action="fetched_and_normalized_sources",
-                input_summary={"feeds_configured": len(feeds)},
-                output_summary={"records_ingested": len(saved)},
+                input_summary={"feeds_configured": len(feeds), "playwright_urls_configured": len(playwright_urls)},
+                output_summary={"records_ingested": len(saved), "playwright_backend_used": playwright_backend_used},
             )
             return saved
 
@@ -91,6 +110,51 @@ class IngestionAgent(BaseAgent):
                     "published_at": entry.get("published", ""),
                 }
             )
+        return results
+
+    def _fetch_with_playwright_safe(self, urls: List[str]) -> List[Dict[str, Any]]:
+        """Best-effort headless-browser fetch. Returns [] (never raises) on
+        any failure so the pipeline always continues to the RSS/mock path."""
+        try:
+            from playwright.sync_api import sync_playwright
+        except ImportError:
+            self.logger.info("Playwright not installed — skipping browser-automation ingestion.")
+            return []
+
+        results: List[Dict[str, Any]] = []
+        try:
+            with sync_playwright() as pw:
+                browser = pw.chromium.launch(headless=True)
+                try:
+                    for url in urls:
+                        try:
+                            page = browser.new_page()
+                            page.goto(url, timeout=15000, wait_until="networkidle")
+                            title = page.title()
+                            # Best-effort generic content extraction — real
+                            # deployments would use per-site CSS selectors;
+                            # this generic body-text grab keeps the fallback
+                            # path simple and site-agnostic for the demo.
+                            content = page.inner_text("body")
+                            page.close()
+                            results.append(
+                                {
+                                    "source_name": url,
+                                    "source_type": "playwright",
+                                    "url": url,
+                                    "title": title,
+                                    "content": normalize_text(content[:5000]),
+                                    "published_at": "",
+                                }
+                            )
+                        except Exception as exc:
+                            self.logger.warning(f"Playwright fetch failed for {url}: {exc}")
+                            continue
+                finally:
+                    browser.close()
+        except Exception as exc:
+            self.logger.warning(f"Playwright ingestion unavailable/failed: {exc}")
+            return []
         return results
 
     def _load_seed_data(self) -> List[Dict[str, Any]]:

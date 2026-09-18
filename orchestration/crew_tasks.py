@@ -26,11 +26,20 @@ from utils.logging_setup import get_logger
 logger = get_logger("crew_tasks")
 
 try:
-    from crewai import Agent, Crew, Process, Task
+    from crewai import Agent, Crew, Process, Task  # type: ignore[import-not-found, import-untyped]
 
     _CREWAI_AVAILABLE = True
-except ImportError:
+except (ImportError, ModuleNotFoundError):
     _CREWAI_AVAILABLE = False
+
+    class _Mock:
+        def __getattr__(self, name: str) -> Any:
+            return _Mock()
+
+        def __call__(self, *args: Any, **kwargs: Any) -> Any:
+            return _Mock()
+
+    Agent = Crew = Process = Task = _Mock()  # type: ignore[assignment, misc]
 
 
 def _deterministic_synthesis(insights: List[Dict[str, Any]]) -> str:
@@ -48,7 +57,7 @@ def _deterministic_synthesis(insights: List[Dict[str, Any]]) -> str:
     return "\n".join(lines)
 
 
-def _build_crew(insights: List[Dict[str, Any]]) -> "Crew":
+def _build_crew(insights: List[Dict[str, Any]]) -> Any:
     research_analyst = Agent(
         role="Research Analyst",
         goal="Summarize sentiment and trend signals into clear observations.",

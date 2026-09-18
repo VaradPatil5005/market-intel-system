@@ -1,0 +1,22 @@
+# Render.com blueprint — https://render.com/docs/blueprint-spec
+# Deploy: push this repo to GitHub, then on Render choose
+# "New +" -> "Blueprint" and point it at the repo. Free tier: 750
+# instance-hours/month, sleeps after 15 min idle (cold start ~30-60s
+# on the next request — fine for a portfolio project).
+services:
+  - type: web
+    name: market-intel-system
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:////app/storage/market_intel.db
+      - key: ENABLE_COMPETITOR_MONITOR
+        value: "true"
+      - key: COMPANY_WATCHLIST
+        value: "OpenAI,Anthropic,Nvidia,Microsoft,Google"
+    disk:
+      name: market-intel-storage
+      mountPath: /app/storage
+      sizeGB: 1

@@ -84,6 +84,18 @@ def main() -> int:
     for kind, path in saved_paths.items():
         print(f"  report ({kind}): {path}")
 
+
+    # Hermes Autonomous Self-Learning & Trajectory Evaluation Loop
+    try:
+        from agents.hermes_self_learning_agent import hermes_self_learning_agent
+        self_learn_summary = hermes_self_learning_agent.run()
+        print("\n--- Hermes Autonomous Self-Learning Loop ---")
+        print(f"  Forecasts audited: {self_learn_summary['forecast_evaluations']['forecasts_audited']}")
+        print(f"  Autonomous corrections generated: {self_learn_summary['forecast_evaluations']['autonomous_corrections_generated']}")
+        print(f"  Memory consolidation: {self_learn_summary['memory_consolidation']['new_fact'] or 'Nominal (no drift)'}")
+    except Exception as exc:
+        logger.warning(f"Hermes self-learning non-blocking notice: {exc}")
+
     logger.info(f"Run {run_id} complete.")
     return 0
 

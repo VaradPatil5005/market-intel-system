@@ -13,6 +13,7 @@ from database.models import (
     AgentMetric,
     ConfidenceScore,
     Entity,
+    ForecastResult,
     Insight,
     RawSource,
     ReportExport,
@@ -32,6 +33,7 @@ TABLE_MAP = {
     "trend_results": TrendResult,
     "insights": Insight,
     "confidence_scores": ConfidenceScore,
+    "forecast_results": ForecastResult,
     "report_exports": ReportExport,
     "agent_metrics": AgentMetric,
 }
