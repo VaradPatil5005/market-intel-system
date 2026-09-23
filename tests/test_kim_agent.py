@@ -3,8 +3,7 @@ Unit tests for KIM Chief Female AI Strategist & Voice Agent.
 Zero emojis.
 """
 import os
-import pytest
-from agents.kim_voice_agent import KimResponse, KimVoiceAgent, kim_voice_agent, synthesize_female_speech_wav
+from agents.kim_voice_agent import KimResponse, kim_voice_agent, synthesize_female_speech_wav
 
 
 def test_kim_female_speech_synthesis():

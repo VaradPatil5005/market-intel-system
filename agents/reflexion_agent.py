@@ -22,7 +22,7 @@ This creates a continuous improvement loop:
 from __future__ import annotations
 
 import json
-from typing import List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from agents.base import BaseAgent
 from database.models import AgentLearning, Insight

@@ -15,7 +15,7 @@ import logging
 import re
 import time
 import concurrent.futures
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 try:
     import feedparser

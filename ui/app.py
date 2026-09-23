@@ -16,16 +16,13 @@ Run with: streamlit run ui/app.py
 """
 from __future__ import annotations
 
-import json
 import os
 import sys
-from datetime import datetime
 from pathlib import Path
 
 # Allow running via `streamlit run ui/app.py` from any working directory.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import numpy as np
 import pandas as pd
 import streamlit as st
 
@@ -50,7 +47,6 @@ liquidity_order_flow_agent = LiquidityOrderFlowAgent()
 execution_router_agent = ExecutionRouterAgent()
 from agents.hermes_self_learning_agent import hermes_self_learning_agent
 from utils.memory_store import memory_store
-from skills.skill_registry import skill_registry
 from agents.discrepancy_auditor_agent import discrepancy_auditor_agent
 import importlib
 import agents.kim_voice_agent
@@ -59,7 +55,7 @@ try:
 except Exception:
     pass
 
-from agents.kim_voice_agent import kim_voice_agent, KimResponse
+from agents.kim_voice_agent import kim_voice_agent
 
 if hasattr(agents.kim_voice_agent, "synthesize_female_speech_wav"):
     synthesize_female_speech_wav = agents.kim_voice_agent.synthesize_female_speech_wav
@@ -91,12 +87,10 @@ else:
         except Exception:
             return None
 
-from agents.friday_voice_agent import friday_voice_agent
 from agents.global_macro_agent import global_macro_agent
 from agents.macro_rates_agent import macro_rates_agent
 from agents.risk_sentinel_agent import risk_sentinel_agent
 from agents.vibe_quant_agent import vibe_quant_agent
-from agents.voice_security_agent import voice_security_agent
 from database.models import (
     AgentLearning,
     ConfidenceScore,
@@ -134,7 +128,6 @@ except Exception:
 from ui.blackbox_theme import (
     BLACKBOX_CSS,
     render_signalora_brand_header,
-    render_hero_banner,
     render_hero_banner_component,
     render_global_market_ribbon,
     render_market_summary_section,
@@ -146,12 +139,10 @@ from ui.blackbox_theme import (
     render_category_pills,
     render_breaking_news_grid,
     render_bonds_dashboard,
-    render_global_economy_dashboard,
     render_benchmark_bars,
     render_tradingview_widget,
     render_tradingview_heatmap,
 )
-from utils.config import settings
 
 st.set_page_config(
     page_title="SIGNALORA // From market noise to verified signals",
@@ -427,7 +418,7 @@ if st.session_state.active_view == "analyst_desk":
         with disc_c1:
             audit_ticker = st.selectbox("Entity Symbol", ["NVDA", "TSLA", "MSFT", "AAPL"], key="audit_ticker_sym")
         with disc_c2:
-            st.markdown(f"<div style='font-family: monospace; font-size: 11px; color: #a1a1aa; padding-top: 8px;'>MANDATE: DISCLOSURE DIVERGENCE ANALYSIS</div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='font-family: monospace; font-size: 11px; color: #a1a1aa; padding-top: 8px;'>MANDATE: DISCLOSURE DIVERGENCE ANALYSIS // {audit_ticker}</div>", unsafe_allow_html=True)
 
         audit_res = discrepancy_auditor_agent.audit_entity(audit_ticker)
 

@@ -31,8 +31,8 @@ DOMAIN_TRUST: Dict[str, float] = {
 }
 DEFAULT_DOMAIN_TRUST = 0.6
 
-REJECT_BELOW = 0.35
-DOWNRANK_BELOW = 0.5
+REJECT_BELOW = float(getattr(settings, "credibility_threshold", 0.35))
+DOWNRANK_BELOW = float(getattr(settings, "credibility_downrank_threshold", 0.5))
 
 
 class CredibilityAgent(BaseAgent):

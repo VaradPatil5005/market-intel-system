@@ -10,7 +10,7 @@ Tests:
 """
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 from fastapi.testclient import TestClient
@@ -18,12 +18,10 @@ from fastapi.testclient import TestClient
 import agent_reach
 from agents.deep_search_agent import DeepSearchAgent
 from api.main import app
-from database.models import RawSource
-from database.session import Repository, get_session, init_db
+from database.session import get_session, init_db
 from skills.agent_reach_research_skill import AgentReachResearchSkill
 from skills.skill_registry import skill_registry
 from utils.agent_reach_service import AgentReachService, reach_service
-from utils.config import settings
 
 
 @pytest.fixture(autouse=True)

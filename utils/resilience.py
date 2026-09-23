@@ -1,4 +1,4 @@
-﻿"""
+"""
 Institutional-grade network resilience and adaptive rate-limiting engine.
 Provides Token Bucket rate limiting, Circuit Breaker state machine, and
 exponential backoff retry decorators to prevent systemic pipeline crashes
@@ -7,7 +7,7 @@ under high-frequency international market queries.
 
 import time
 import threading
-from typing import Callable, Any, Dict, Optional
+from typing import Callable, Any, Optional
 import logging
 
 logger = logging.getLogger("ResilienceEngine")

@@ -1,10 +1,10 @@
-﻿"""
+"""
 Corporate PR vs SEC 10-Q / 8-K Regulatory Forensic Discrepancy Skill.
 Automatically identifies divergence between promotional PR narrative and
 audited SEC regulatory disclosures, applying confidence haircuts.
 """
 
-from typing import Dict, Any, List
+from typing import Dict, Any
 from skills.base_skill import BaseMarketSkill
 
 class SecDiscrepancySkill(BaseMarketSkill):

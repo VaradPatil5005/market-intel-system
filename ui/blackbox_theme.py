@@ -1955,9 +1955,9 @@ def render_bonds_dashboard() -> str:
         mc = {"us_10y": "4.96%", "us_30y": "5.34%", "us_2y": "3.94%"}
 
     b_map = {str(b.get("tenor", "")): b for b in bonds}
-    y_2y = str(b_map.get("2Y", {}).get("yield", "3.94%"))
-    y_10y = str(b_map.get("10Y", {}).get("yield", "4.96%"))
-    y_30y = str(b_map.get("30Y", {}).get("yield", "5.34%"))
+    y_2y = str(b_map.get("2Y", {}).get("yield", mc.get("us_2y", "3.94%")))
+    y_10y = str(b_map.get("10Y", {}).get("yield", mc.get("us_10y", "4.96%")))
+    y_30y = str(b_map.get("30Y", {}).get("yield", mc.get("us_30y", "5.34%")))
 
     chg_2y = str(b_map.get("2Y", {}).get("chg", "+9.7bps"))
     chg_10y = str(b_map.get("10Y", {}).get("chg", "+1.3bps"))

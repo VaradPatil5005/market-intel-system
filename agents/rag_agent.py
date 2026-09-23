@@ -21,7 +21,7 @@ cosine-similarity retrieval — the pipeline always completes a run.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List, Tuple
+from typing import Any, Dict, List, Tuple
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity

@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import numpy as np
-import pytest
 
 from agents.voice_security_agent import (
     AcousticGraphAttention,

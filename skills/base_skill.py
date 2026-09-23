@@ -1,11 +1,11 @@
-﻿"""
+"""
 Base class for Hermes-Agent inspired Market Skills.
 Each skill encapsulates a specific institutional strategy playbook,
 execution trigger rules, and dynamic self-learning accuracy tracking.
 """
 
 from abc import ABC, abstractmethod
-from typing import Dict, Any, List
+from typing import Dict, Any
 
 class BaseMarketSkill(ABC):
     """Abstract base class for executable institutional market skills."""

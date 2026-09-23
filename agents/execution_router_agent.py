@@ -1,4 +1,4 @@
-﻿"""
+"""
 Institutional Smart Order Routing (SOR) & Algorithmic Execution Agent.
 Slices multi-million dollar institutional orders into TWAP / VWAP execution
 schedules across global lit and dark venues (IEX, ARCA, INET, BATS, SIGMA-X)
@@ -6,7 +6,6 @@ and serializes orders into standard FIX Protocol v4.4 specification messages.
 """
 
 from typing import Dict, Any, List, Optional
-import time
 import uuid
 import datetime
 import logging

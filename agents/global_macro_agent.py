@@ -9,9 +9,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
-
-import numpy as np
+from typing import List
 
 logger = logging.getLogger(__name__)
 

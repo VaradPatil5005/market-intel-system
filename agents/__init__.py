@@ -6,7 +6,7 @@ metadata registry, lazy factory loading, and categorization.
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Type
+from typing import Any, Dict, List, Optional
 
 # Core & Ingestion Agents
 from agents.base import BaseAgent

@@ -2,7 +2,6 @@
 Unit tests for Live Internet Financial News & RSS Agent (agents.live_news_agent).
 Zero emojis.
 """
-import pytest
 from agents.live_news_agent import LiveNewsAgent, live_news_agent
 
 

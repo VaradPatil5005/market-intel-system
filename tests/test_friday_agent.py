@@ -1,9 +1,7 @@
 """Unit tests for FRIDAY Master Voice & Multimodal Command Agent."""
 from __future__ import annotations
 
-import pytest
-
-from agents.friday_voice_agent import FridayResponse, FridayVoiceAgent, friday_voice_agent
+from agents.friday_voice_agent import FridayResponse, FridayVoiceAgent
 
 
 def test_friday_chart_command_routing():

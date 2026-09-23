@@ -8,9 +8,8 @@ Circuit Breaker controls for global portfolio protection.
 from __future__ import annotations
 
 import logging
-import math
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import List
 
 import numpy as np
 

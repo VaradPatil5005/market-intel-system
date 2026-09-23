@@ -9,7 +9,7 @@ duplicate or stale rows.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Dict, Iterable, List
+from typing import Dict, List
 
 import pandas as pd
 

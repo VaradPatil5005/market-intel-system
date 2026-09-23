@@ -201,7 +201,7 @@ class LiveDaemon:
 
     def _handle_anomalies(self, anomalous_entities: List[str], mention_counts: Dict[str, int]) -> None:
         """Dispatch alerts and optionally trigger a mini-pipeline run."""
-        from utils.alerting import AlertableInsight, dispatch_alerts, send_multi_channel_alert  # noqa: PLC0415
+        from utils.alerting import send_multi_channel_alert  # noqa: PLC0415
 
         logger.info(f"LiveDaemon: handling {len(anomalous_entities)} anomalous entities: {anomalous_entities}")
 

@@ -10,7 +10,7 @@ from __future__ import annotations
 import logging
 import math
 from dataclasses import dataclass, field
-from typing import Any, List, Optional, Tuple
+from typing import List, Optional
 
 import numpy as np
 
@@ -112,7 +112,6 @@ class AcousticGraphAttention:
         for h in range(self.heads):
             # Project frames: (n_frames, d_h)
             H = np.dot(frame_features, self.W[h])
-            d_h = H.shape[1]
 
             # Construct self-attention pairs
             H_i = np.repeat(H[:, None, :], n_frames, axis=1)

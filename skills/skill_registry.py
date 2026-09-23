@@ -2,7 +2,7 @@
 Hermes-Agent Inspired Market Skills Registry.
 Discovers, executes, and dynamically tracks win-rate accuracy for all market skills.
 """
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any
 import logging
 from skills.base_skill import BaseMarketSkill
 from skills.chokepoint_hedging_skill import ChokepointHedgingSkill

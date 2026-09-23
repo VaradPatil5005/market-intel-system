@@ -12,11 +12,10 @@ from __future__ import annotations
 
 import concurrent.futures
 import numpy as np
-import pytest
 
-from agents.discrepancy_auditor_agent import DiscrepancyAuditorAgent, discrepancy_auditor_agent
-from agents.global_macro_agent import GlobalMacroAgent, global_macro_agent
-from agents.risk_sentinel_agent import RiskSentinelAgent, risk_sentinel_agent
+from agents.discrepancy_auditor_agent import DiscrepancyAuditorAgent
+from agents.global_macro_agent import GlobalMacroAgent
+from agents.risk_sentinel_agent import RiskSentinelAgent
 from database.models import UserQuery
 from database.session import Repository, get_session, init_db
 

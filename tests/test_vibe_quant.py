@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import numpy as np
-import pytest
 
 from agents.vibe_quant_agent import VibeQuantAgent, vibe_quant_agent
 

@@ -1,4 +1,4 @@
-﻿"""
+"""
 Unit and stress test suite for World-Scale Institutional Agents:
 GeopoliticalRiskAgent, LiquidityOrderFlowAgent, ExecutionRouterAgent,
 and the Network Resilience & Circuit Breaker engine.
@@ -10,7 +10,7 @@ import threading
 from agents.geopolitical_risk_agent import GeopoliticalRiskAgent
 from agents.liquidity_order_flow_agent import LiquidityOrderFlowAgent
 from agents.execution_router_agent import ExecutionRouterAgent
-from utils.resilience import CircuitBreaker, CircuitBreakerOpenException, TokenBucketRateLimiter, resilient_market_fetch
+from utils.resilience import CircuitBreaker, CircuitBreakerOpenException, TokenBucketRateLimiter
 
 def test_geopolitical_risk_normal_and_stress():
     agent = GeopoliticalRiskAgent()

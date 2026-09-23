@@ -1,15 +1,12 @@
-﻿"""
+"""
 Unit and Integration Test Suite for Hermes-Agent Self-Learning Architecture.
 Tests bounded memory constraints, dynamic market skills adaptation, and
 autonomous trajectory back-testing.
 """
 
 import pytest
-from utils.memory_store import BoundedMemoryStore, MAX_MEMORY_CHARS, MAX_USER_CHARS
+from utils.memory_store import BoundedMemoryStore, MAX_MEMORY_CHARS
 from skills.skill_registry import SkillRegistry
-from skills.chokepoint_hedging_skill import ChokepointHedgingSkill
-from skills.sec_discrepancy_skill import SecDiscrepancySkill
-from skills.microstructure_tca_skill import MicrostructureTcaSkill
 from agents.hermes_self_learning_agent import HermesSelfLearningAgent
 from database.session import get_session, Repository
 from database.models import AgentLearning

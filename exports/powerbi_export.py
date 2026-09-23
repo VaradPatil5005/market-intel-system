@@ -28,9 +28,8 @@ from database.models import (
     TrendResult,
 )
 from database.session import Repository, Session
-from exports.csv_export import export_many, export_table
+from exports.csv_export import export_table
 from utils.config import settings
-from utils.helpers import new_id
 from utils.logging_setup import get_logger
 
 logger = get_logger("powerbi_export")
@@ -229,6 +228,11 @@ def generate_fact_market_intelligence(session: Session) -> List[Dict[str, Any]]:
             p_val = getattr(p, "current_price", getattr(p, "close_price", 0.0)) or 0.0
             price_by_ticker[p.ticker.upper()] = float(p_val)
 
+    forecast_by_entity: Dict[str, float] = {}
+    for f in forecasts:
+        if f.entity_id:
+            forecast_by_entity[f.entity_id] = float(getattr(f, "predicted_magnitude", 0.0) or 0.0) * 100.0
+
     fact_rows = []
     for idx, ins in enumerate(insights):
         cf = conf_scores.get(ins.id)
@@ -251,6 +255,7 @@ def generate_fact_market_intelligence(session: Session) -> List[Dict[str, Any]]:
         sentiment_val = sent_by_entity.get(entity_id, 0.12)
         trend_z = trend_by_topic.get(ins.category.lower(), 1.45)
         price_val = price_by_ticker.get("NVDA", 125.50)
+        forecast_ret = round(forecast_by_entity.get(entity_id, 2.45), 2)
 
         fact_rows.append({
             "fact_id": f"fact_{ins.id or idx}",
@@ -263,7 +268,7 @@ def generate_fact_market_intelligence(session: Session) -> List[Dict[str, Any]]:
             "sentiment_score": round(sentiment_val, 4),
             "trend_zscore": round(trend_z, 2),
             "asset_price_usd": round(price_val, 2),
-            "forecast_return_pct": 2.45,
+            "forecast_return_pct": forecast_ret,
             "is_flagged": is_flagged_val,
             "is_anomalous": 1 if abs(trend_z) >= 2.0 else 0,
             "risk_weight": round((1.0 - confidence_val) * 100.0, 2),

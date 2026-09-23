@@ -1,13 +1,12 @@
-﻿"""
+"""
 Hermes-Agent Inspired Bounded Persistent Memory Store.
 Maintains curated long-term memory (MEMORY.md) and user profile (USER.md)
 with bounded character limits and system prompt snapshot serialization.
 """
 
-import os
 import threading
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
 MEMORY_DIR = Path("storage/memory")
 MEMORY_DIR.mkdir(parents=True, exist_ok=True)

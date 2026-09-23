@@ -9,7 +9,6 @@ and calculates the Composite Geopolitical Stress Index (CGSI).
 from typing import Dict, Any, List, Optional
 import logging
 from agents.base import BaseAgent
-from utils.resilience import resilient_market_fetch
 from utils.metrics import MetricsCollector
 
 logger = logging.getLogger("GeopoliticalRiskAgent")
