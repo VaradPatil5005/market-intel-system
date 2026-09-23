@@ -1,4 +1,4 @@
-﻿"""
+"""
 Hermes-Agent Inspired Autonomous Self-Learning & Trajectory Evaluation Engine.
 Performs autonomous ground-truth back-testing, generates self-correcting policy
 learnings without requiring human intervention, updates dynamic skill weights,
@@ -58,6 +58,10 @@ class HermesSelfLearningAgent(BaseAgent):
             "evaluated_predictions": forecast_eval.get("forecasts_audited", 0),
             "adapted_skills": skill_eval,
         }
+
+    def run_learning_cycle(self, input_data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """Convenience alias for running an autonomous self-learning cycle."""
+        return self.run(input_data)
 
     def _evaluate_forecast_trajectories(self, session) -> Dict[str, Any]:
         """

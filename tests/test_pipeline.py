@@ -18,7 +18,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 
 def test_full_pipeline_runs_end_to_end():
-    with tempfile.TemporaryDirectory() as tmp:
+    import logging
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
         os.environ["DATABASE_URL"] = f"sqlite:///{tmp}/test_market_intel.db"
         os.environ["EXPORT_DIR"] = f"{tmp}/exports"
         os.environ["CHECKPOINT_DIR"] = f"{tmp}/checkpoints"
@@ -49,6 +50,7 @@ def test_full_pipeline_runs_end_to_end():
         with get_session() as session:
             metrics.persist(session, final_state["run_id"])
 
+        logging.shutdown()
         print("Smoke test passed:", metrics.summary())
 
 

@@ -297,3 +297,26 @@ class ReflexionAgent(BaseAgent):
         if lesson.category and lesson.category.lower() == category.lower():
             score += 0.4
         return score
+
+    def run(
+        self,
+        session: Session,
+        insights: Optional[List[Any]] = None,
+        entities: Optional[List[Any]] = None,
+    ) -> Dict[str, Any]:
+        """Audit insights against past lessons and compute feedback penalties."""
+        insights = insights or []
+        penalties: Dict[str, float] = {}
+        for ins in insights[:10]:
+            entity_name = self._resolve_entity_name(session, ins)
+            cat = getattr(ins, "category", "general")
+            p = self.compute_penalty(session, entity_name, cat, getattr(ins, "text", ""))
+            if p > 0:
+                penalties[entity_name] = round(p, 4)
+        return {
+            "agent": self.name,
+            "status": "COMPLETED",
+            "evaluated_insights": len(insights),
+            "penalties_applied": penalties,
+        }
+

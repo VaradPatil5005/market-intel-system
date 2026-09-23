@@ -11,19 +11,31 @@ env/
 
 # Environment variables & secrets
 .env
+*.env.*
 
 # Testing & cache
 .pytest_cache/
 .coverage
 htmlcov/
 
-# Local databases & checkpoints
+# Local databases, storage, checkpoints & event logs
+storage/*.db*
+storage/*.sqlite*
 storage/market_intel.db*
 storage/checkpoints/*
 storage/chroma/*
 storage/logs/*
 storage/audio/*
 storage/*.wav
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+*.jsonl
+storage/logs/*.jsonl
+storage/logs/*.log
 exports/output/*
 backups/
 scratch_tail.txt

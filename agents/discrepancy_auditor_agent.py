@@ -179,5 +179,9 @@ class DiscrepancyAuditorAgent:
             audit_records=all_records,
         )
 
+    def run(self, session: Any = None, insights: Optional[List[Any]] = None, entities: Optional[List[Any]] = None) -> ForensicAuditSummary:
+        """Pipeline execution entry point for SEC forensic discrepancy auditing."""
+        return self.audit_system_insights(insights or [])
+
 
 discrepancy_auditor_agent = DiscrepancyAuditorAgent()

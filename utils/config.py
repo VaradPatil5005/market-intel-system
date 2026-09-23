@@ -95,6 +95,16 @@ class Settings(BaseSettings):
     deep_search_max_results: int = 5
     deep_search_on_anomaly_only: bool = True       # only trigger on Z-score spikes
 
+    # --- Agent-Reach Multi-Platform Internet Engine ---
+    enable_agent_reach: bool = True                # unified multi-platform research
+    agent_reach_prefer_jina: bool = True           # clean markdown web scraping via Jina Reader
+    agent_reach_exa_enabled: bool = True           # Exa search routing
+    agent_reach_xueqiu_enabled: bool = True        # Xueqiu equity quotes & hot sentiment
+    agent_reach_reddit_enabled: bool = True        # Reddit social sentiment
+    agent_reach_twitter_enabled: bool = True       # Twitter/X channel routing
+    agent_reach_youtube_enabled: bool = True       # YouTube transcript & audio routing
+    groq_api_key: str = ""                         # Optional Groq Whisper key
+
     # --- v2: SEC EDGAR ingestion ---
     enable_sec_edgar: bool = True                  # free, no key; fetches 8-K filings
     sec_edgar_lookback_days: int = 7

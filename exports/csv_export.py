@@ -36,3 +36,9 @@ def export_many(tables: Dict[str, List[Dict]]) -> Dict[str, Path]:
     for name, rows in tables.items():
         written[name] = export_table_to_csv(rows, f"{name}.csv")
     return written
+
+
+def export_table(name: str, rows: List[Dict]) -> Path:
+    """Convenience helper to export a single named table to CSV."""
+    return export_table_to_csv(rows, f"{name}.csv")
+
