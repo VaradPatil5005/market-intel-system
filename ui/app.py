@@ -286,6 +286,7 @@ if st.session_state.active_view == "analyst_desk":
         "FORENSIC AUDIT (10-Q)",
         "QUANT CONFLUENCE",
         "HERMES PERSISTENT MEMORY",
+        "AGENT REACH RESEARCH HUB",
     ])
 
     # ---- Sub-Tab 0: Insight Review Queue ----
@@ -476,6 +477,186 @@ if st.session_state.active_view == "analyst_desk":
                 skills_len = len(res.get('adapted_skills', []))
                 st.success(f"Self-learning cycle completed. Realized predictions evaluated: {eval_pred}, Skills adapted: {skills_len}.")
                 st.rerun()
+
+    # ---- Sub-Tab 6: Agent Reach Research Hub ----
+    with desk_tabs[6]:
+        st.markdown(
+            """
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,215,0,0.15); padding-bottom: 8px;">
+                <div style="font-family: monospace; font-size: 11px; font-weight: 700; color: #FFD700; text-transform: uppercase;">
+                    AGENT REACH RESEARCH HUB // 16-PLATFORM MULTI-CHANNEL INTERNET CAPABILITY
+                </div>
+                <div style="font-family: monospace; font-size: 10px; color: #22c55e;">
+                    ● ENGINE ONLINE · MULTI-BACKEND AUTO-ROUTING
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        reach_sub_tabs = st.tabs([
+            "OMNI-CHANNEL SEARCH",
+            "UNIVERSAL URL READER",
+            "16-PLATFORM DOCTOR",
+            "MEDIA TRANSCRIBER",
+        ])
+
+        from utils.agent_reach_service import reach_service
+
+        # 1. Omni-Channel Search
+        with reach_sub_tabs[0]:
+            st.markdown("<div style='font-size: 11px; color: #a1a1aa; margin-bottom: 8px;'>Execute real-time intelligence queries across Web, Xueqiu Equities, and Social communities.</div>", unsafe_allow_html=True)
+            sc1, sc2, sc3 = st.columns([3, 1, 1])
+            with sc1:
+                search_q = st.text_input("Research Topic / Entity Query", value="NVIDIA AI data center demand", key="reach_query_input")
+            with sc2:
+                search_scope = st.selectbox("Channel Scope", ["All Channels", "Web (Exa / Jina)", "Xueqiu Equities", "Social Communities"], key="reach_scope_sel")
+            with sc3:
+                max_res = st.selectbox("Max Results", [3, 5, 8, 10], index=1, key="reach_max_res")
+
+            if st.button("EXECUTE AGENT REACH RESEARCH", key="btn_run_reach_search", use_container_width=True):
+                with st.spinner("Agent-Reach dispatching across multi-backend channels..."):
+                    results_found = []
+                    if search_scope in ("All Channels", "Web (Exa / Jina)"):
+                        web_hits = reach_service.search_web(search_q, max_results=max_res)
+                        for w in web_hits:
+                            results_found.append({"source": f"Web / {w.get('source')}", "title": w.get("title"), "text": w.get("snippet"), "url": w.get("url")})
+
+                    if search_scope in ("All Channels", "Xueqiu Equities"):
+                        stock_res = reach_service.get_stock_intel(search_q)
+                        quote = stock_res.get("quote", {})
+                        if quote and quote.get("current"):
+                            results_found.append({
+                                "source": "Xueqiu Stock Quote",
+                                "title": f"{search_q.upper()} Live Telemetry",
+                                "text": f"Price: ${quote.get('current')} ({quote.get('percent')}%), PE: {quote.get('pe_ttm')}, Market Cap: {quote.get('market_capital')}",
+                                "url": f"https://xueqiu.com/S/{search_q.upper()}",
+                            })
+                        for p in stock_res.get("trending_posts", [])[:3]:
+                            results_found.append({
+                                "source": "Xueqiu Community",
+                                "title": p.get("title") or "Xueqiu Discussion",
+                                "text": p.get("text", "")[:280],
+                                "url": p.get("url", "https://xueqiu.com"),
+                            })
+
+                    if search_scope in ("All Channels", "Social Communities"):
+                        social_hits = reach_service.search_social_discussions(search_q, limit=max_res)
+                        for s in social_hits:
+                            results_found.append({
+                                "source": s.get("platform", "Social"),
+                                "title": s.get("title"),
+                                "text": s.get("content"),
+                                "url": s.get("url"),
+                            })
+
+                    st.session_state["last_reach_results"] = results_found
+
+            if "last_reach_results" in st.session_state and st.session_state["last_reach_results"]:
+                res_list = st.session_state["last_reach_results"]
+                st.markdown(f"<div style='font-family: monospace; font-size: 11px; color: #22c55e; margin: 10px 0;'>DISCOVERED {len(res_list)} CORROBORATING SIGNALS:</div>", unsafe_allow_html=True)
+                for item in res_list:
+                    st.markdown(f"""
+                    <div style="background: #090a14; border: 1px solid rgba(255,255,255,0.08); border-left: 3px solid #FFD700; border-radius: 6px; padding: 12px; margin-bottom: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; color: #FFD700; text-transform: uppercase;">[{item.get('source')}]</span>
+                            <a href="{item.get('url', '#')}" target="_blank" style="color: #38bdf8; font-size: 11px; text-decoration: none;">View Source &#8599;</a>
+                        </div>
+                        <div style="font-size: 12px; font-weight: 600; color: #f4f4f5; margin: 4px 0;">{item.get('title')}</div>
+                        <div style="font-size: 11px; color: #a1a1aa; line-height: 1.4;">{item.get('text')}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+        # 2. Universal URL Reader (Jina Reader)
+        with reach_sub_tabs[1]:
+            st.markdown("<div style='font-size: 11px; color: #a1a1aa; margin-bottom: 8px;'>Paste any financial article, SEC regulatory document, or research substack URL for clean Markdown extraction.</div>", unsafe_allow_html=True)
+            u_col1, u_col2 = st.columns([4, 1])
+            with u_col1:
+                target_url = st.text_input("Target URL", value="https://news.ycombinator.com", key="reach_read_url_input")
+            with u_col2:
+                st.markdown("<div style='padding-top: 28px;'></div>", unsafe_allow_html=True)
+                read_btn = st.button("PARSE WITH JINA", key="btn_read_jina_url", use_container_width=True)
+
+            if read_btn:
+                with st.spinner("Extracting clean markdown via Agent-Reach Jina Reader backend..."):
+                    read_doc = reach_service.read_url(target_url)
+                    st.session_state["last_read_doc"] = read_doc
+
+            if "last_read_doc" in st.session_state:
+                doc = st.session_state["last_read_doc"]
+                m1, m2, m3 = st.columns(3)
+                with m1:
+                    st.metric("READER PROVIDER", doc.get("provider", "Jina"), f"Status: {doc.get('status')}")
+                with m2:
+                    st.metric("WORD COUNT", f"{doc.get('word_count', 0):,}", "Document Length")
+                with m3:
+                    st.metric("BYTE LENGTH", f"{doc.get('char_count', 0):,} chars", "Payload")
+
+                st.markdown(f"**Document Title:** {doc.get('title', 'Document')}")
+                st.text_area("Extracted Markdown Content", value=doc.get("content", ""), height=280)
+
+        # 3. 16-Platform Channel Doctor
+        with reach_sub_tabs[2]:
+            doc_c1, doc_c2 = st.columns([3, 1])
+            with doc_c1:
+                st.markdown("<div style='font-size: 11px; color: #a1a1aa;'>Real-time platform access matrix across all 16 Agent-Reach channels. Probes active backends and credential health.</div>", unsafe_allow_html=True)
+            with doc_c2:
+                run_doc_btn = st.button("REFRESH DOCTOR", key="btn_refresh_doctor", use_container_width=True)
+
+            if run_doc_btn or "doctor_cache" not in st.session_state:
+                with st.spinner("Probing 16 channel backends..."):
+                    st.session_state["doctor_cache"] = reach_service.run_doctor()
+
+            doc_data = st.session_state.get("doctor_cache", {})
+            dm1, dm2, dm3, dm4 = st.columns(4)
+            with dm1:
+                st.metric("TOTAL CHANNELS", doc_data.get("total_channels", 16), "Monitored")
+            with dm2:
+                st.metric("ACTIVE / READY", doc_data.get("ok_count", 0), "Zero-Config / OK")
+            with dm3:
+                st.metric("NEEDS SETUP / WARN", doc_data.get("warn_count", 0), "Login Required")
+            with dm4:
+                st.metric("UNAVAILABLE / OFF", doc_data.get("off_count", 0), "Tool Missing")
+
+            channels = doc_data.get("channels", {})
+            grid_cols = st.columns(4)
+            for idx, (ch_name, ch_info) in enumerate(channels.items()):
+                col = grid_cols[idx % 4]
+                status = ch_info.get("status", "off")
+                color = "#22c55e" if status == "ok" else ("#eab308" if status == "warn" else "#ef4444")
+                active = ch_info.get("active_backend") or "None"
+                with col:
+                    st.markdown(f"""
+                    <div style="background: #090a14; border: 1px solid rgba(255,255,255,0.08); border-top: 2px solid {color}; border-radius: 6px; padding: 10px; margin-bottom: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; color: #fff; text-transform: uppercase;">{ch_name}</span>
+                            <span style="font-size: 9px; font-weight: 700; color: {color}; border: 1px solid {color}; border-radius: 3px; padding: 1px 4px;">{status.upper()}</span>
+                        </div>
+                        <div style="font-size: 10px; color: #71717a; margin-top: 4px;">Tier {ch_info.get('tier', 0)} · Backend: <strong style="color: #e4e4e7;">{active}</strong></div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+        # 4. Media Transcriber
+        with reach_sub_tabs[3]:
+            st.markdown("<div style='font-size: 11px; color: #a1a1aa; margin-bottom: 8px;'>Extract audio transcripts from earnings conference calls, CEO interviews, and market analysis YouTube videos.</div>", unsafe_allow_html=True)
+            v_col1, v_col2 = st.columns([3, 1])
+            with v_col1:
+                vid_url = st.text_input("Media / YouTube URL", value="https://www.youtube.com/watch?v=dQw4w9WgXcQ", key="reach_vid_url_input")
+            with v_col2:
+                transcribe_btn = st.button("TRANSCRIBE AUDIO", key="btn_run_transcribe", use_container_width=True)
+
+            if transcribe_btn:
+                with st.spinner("Downloading audio and transcribing via Whisper/yt-dlp..."):
+                    tr_res = reach_service.get_video_transcript(vid_url)
+                    st.session_state["last_transcribe_res"] = tr_res
+
+            if "last_transcribe_res" in st.session_state:
+                tr = st.session_state["last_transcribe_res"]
+                if tr.get("status") == "success":
+                    st.success(f"Transcript retrieved successfully ({tr.get('length', 0):,} characters).")
+                    st.text_area("Extracted Transcript", value=tr.get("transcript", ""), height=220)
+                else:
+                    st.info(f"Transcriber Notice: {tr.get('error', 'Ready for valid YouTube/audio endpoint.')}")
 
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -811,8 +992,28 @@ else:
 
     active_stock_sym = custom_stock_input.strip().upper() if custom_stock_input.strip() else selected_stock_pill
 
+    stk_tf_c1, stk_tf_c2 = st.columns([3, 1])
+    with stk_tf_c1:
+        stock_tf = st.radio(
+            "Candle Timeframe",
+            ["1", "5", "15", "60", "D"],
+            index=0,
+            format_func=lambda x: {"1": "1M (LIVE INTRADAY TICKS)", "5": "5M", "15": "15M", "60": "1H", "D": "1D (DAILY)"}[x],
+            horizontal=True,
+            key="stock_sec_tf_pills",
+        )
+    with stk_tf_c2:
+        st.markdown(
+            f"""
+            <div style="text-align: right; padding-top: 6px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #22c55e;">
+                ● LIVE EXCHANGE TICKS ({active_stock_sym})
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
     # Live Interactive Institutional Stock Graph Console (TradingView Advanced Candlesticks)
-    components.html(render_tradingview_widget(symbol=active_stock_sym, height=520), height=535, scrolling=False)
+    components.html(render_tradingview_widget(symbol=active_stock_sym, height=520, interval=stock_tf), height=535, scrolling=False)
 
     # Active Volume Leaders, Gainers & Losers Tables (Yahoo Finance live data)
     st.markdown(render_stocks_section(), unsafe_allow_html=True)
@@ -848,8 +1049,28 @@ else:
 
     active_crypto_sym = custom_crypto_input.strip().upper() if custom_crypto_input.strip() else selected_crypto_pill
 
+    cr_tf_c1, cr_tf_c2 = st.columns([3, 1])
+    with cr_tf_c1:
+        crypto_tf = st.radio(
+            "Crypto Candle Timeframe",
+            ["1", "5", "15", "60", "D"],
+            index=0,
+            format_func=lambda x: {"1": "1M (24/7 LIVE STREAM)", "5": "5M", "15": "15M", "60": "1H", "D": "1D (DAILY)"}[x],
+            horizontal=True,
+            key="crypto_sec_tf_pills",
+        )
+    with cr_tf_c2:
+        st.markdown(
+            f"""
+            <div style="text-align: right; padding-top: 6px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #f59e0b;">
+                ● 24/7 BINANCE SPOT TICKS ({active_crypto_sym})
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
     # Live Interactive Institutional Crypto Graph Console
-    components.html(render_tradingview_widget(symbol=active_crypto_sym, height=480), height=495, scrolling=False)
+    components.html(render_tradingview_widget(symbol=active_crypto_sym, height=480, interval=crypto_tf), height=495, scrolling=False)
 
     # Spot Leaders, 24h Gainers & Losers Tables (CoinGecko live data)
     st.markdown(render_crypto_section(), unsafe_allow_html=True)

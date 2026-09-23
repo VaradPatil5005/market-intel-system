@@ -1,4 +1,4 @@
-﻿"""
+"""
 Geopolitical Risk & Maritime Chokepoint Sentinel Agent.
 Provides institutional surveillance of critical global trade arteries,
 chokepoints (Hormuz, Malacca, Bab el-Mandeb, Suez, Panama, Taiwan Strait),
@@ -63,12 +63,13 @@ class GeopoliticalRiskAgent(BaseAgent):
     def __init__(self, metrics: Optional[MetricsCollector] = None):
         super().__init__(metrics=metrics)
 
-    def run(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+    def run(self, input_data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         Evaluates current geopolitical tensions, chokepoint threat vectors,
         and assigns risk scores and contingency alerts.
         """
         logger.info("[GeopoliticalRiskAgent] Initiating global maritime & sovereign risk scan.")
+        input_data = input_data or {}
         stress_override = input_data.get("stress_scenario")
         target_entities = input_data.get("entities", ["NVDA", "AAPL", "XOM", "TSM"])
 

@@ -1,4 +1,4 @@
-﻿"""
+"""
 Hermes-Agent Inspired Market Skills Registry.
 Discovers, executes, and dynamically tracks win-rate accuracy for all market skills.
 """
@@ -10,6 +10,7 @@ from skills.sec_discrepancy_skill import SecDiscrepancySkill
 from skills.microstructure_tca_skill import MicrostructureTcaSkill
 from skills.carry_trade_unwind_skill import CarryTradeUnwindSkill
 from skills.vibe_quant_confluence_skill import VibeQuantConfluenceSkill
+from skills.agent_reach_research_skill import AgentReachResearchSkill
 
 logger = logging.getLogger("SkillRegistry")
 
@@ -22,7 +23,8 @@ class SkillRegistry:
             "sec_discrepancy": SecDiscrepancySkill(),
             "microstructure_tca": MicrostructureTcaSkill(),
             "carry_trade_unwind": CarryTradeUnwindSkill(),
-            "quant_confluence": VibeQuantConfluenceSkill()
+            "quant_confluence": VibeQuantConfluenceSkill(),
+            "agent_reach_research": AgentReachResearchSkill(),
         }
 
     def evaluate_and_execute_skills(self, market_context: Dict[str, Any]) -> List[Dict[str, Any]]:

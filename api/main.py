@@ -281,7 +281,58 @@ def public_config() -> Dict[str, Any]:
         "watchlist": [w.strip() for w in settings.company_watchlist.split(",") if w.strip()],
         "low_confidence_threshold": settings.low_confidence_threshold,
         "human_review_required_below": settings.human_review_required_below,
+        "agent_reach_enabled": settings.enable_agent_reach,
     }
+
+
+# ---------------------------------------------------------------------------
+# Agent-Reach Multi-Platform Research Endpoints
+# ---------------------------------------------------------------------------
+@app.get("/api/reach/doctor")
+def reach_doctor() -> Dict[str, Any]:
+    """Inspect availability of all 16 Agent-Reach platforms and backends."""
+    from utils.agent_reach_service import reach_service
+    return reach_service.run_doctor()
+
+
+@app.post("/api/reach/search")
+def reach_search(payload: Dict[str, Any]) -> Dict[str, Any]:
+    """Execute multi-provider internet search via Agent-Reach."""
+    from utils.agent_reach_service import reach_service
+    query = payload.get("query", "").strip()
+    if not query:
+        raise HTTPException(status_code=400, detail="Query parameter cannot be empty.")
+    max_results = int(payload.get("max_results", 5))
+    results = reach_service.search_web(query, max_results=max_results)
+    return {"query": query, "count": len(results), "results": results}
+
+
+@app.post("/api/reach/read")
+def reach_read_url(payload: Dict[str, Any]) -> Dict[str, Any]:
+    """Extract clean Markdown from any web page using Jina Reader."""
+    from utils.agent_reach_service import reach_service
+    url = payload.get("url", "").strip()
+    if not url:
+        raise HTTPException(status_code=400, detail="URL parameter cannot be empty.")
+    return reach_service.read_url(url)
+
+
+@app.get("/api/reach/stock/{symbol}")
+def reach_stock(symbol: str) -> Dict[str, Any]:
+    """Fetch equity telemetry and social posts from Xueqiu."""
+    from utils.agent_reach_service import reach_service
+    return reach_service.get_stock_intel(symbol)
+
+
+@app.post("/api/reach/transcribe")
+def reach_transcribe(payload: Dict[str, Any]) -> Dict[str, Any]:
+    """Transcribe YouTube video or media URL."""
+    from utils.agent_reach_service import reach_service
+    url = payload.get("url", "").strip()
+    if not url:
+        raise HTTPException(status_code=400, detail="URL parameter cannot be empty.")
+    provider = payload.get("provider", "auto")
+    return reach_service.get_video_transcript(url, provider=provider)
 
 
 # ---------------------------------------------------------------------------

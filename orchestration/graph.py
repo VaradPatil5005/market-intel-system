@@ -34,16 +34,22 @@ from langgraph.graph import END, StateGraph
 from agents.confidence_agent import ConfidenceScoringAgent
 from agents.credibility_agent import CredibilityAgent
 from agents.deep_search_agent import DeepSearchAgent
+from agents.discrepancy_auditor_agent import DiscrepancyAuditorAgent
 from agents.entity_resolution_agent import EntityResolutionAgent
 from agents.forecasting_agent import ForecastingAgent
+from agents.geopolitical_risk_agent import GeopoliticalRiskAgent
 from agents.grounding_gate_agent import GroundingGateAgent
+from agents.hermes_self_learning_agent import HermesSelfLearningAgent
 from agents.ingestion_agent import IngestionAgent
 from agents.market_correlation_agent import MarketCorrelationAgent
 from agents.price_data_agent import PriceDataAgent
 from agents.rag_agent import RagInsightAgent
+from agents.reflexion_agent import ReflexionAgent
 from agents.report_agent import ReportGenerationAgent
+from agents.risk_sentinel_agent import RiskSentinelAgent
 from agents.sentiment_agent import SentimentAgent
 from agents.trend_agent import TrendAgent
+from agents.vibe_quant_agent import VibeQuantAgent
 from database.session import get_session
 from orchestration import supervisor
 from orchestration.checkpointing import save_checkpoint
@@ -64,13 +70,19 @@ NODE_ORDER = [
     "analyze_trends",
     "deep_search",        # post-trends: anomaly-driven web/SEC discovery
     "rag_retrieval",
+    "geopolitical_risk",  # maritime chokepoints & sovereign stress
     "score_confidence",
     "price_enrich",
     "market_correlation",
     "forecast_trends",
+    "sec_auditor",        # 10-Q forensic non-GAAP/GAAP divergence audit
+    "vibe_quant",         # retail sentiment velocity vs liquidity skew
+    "risk_sentinel",      # VaR and circuit breaker telemetry
     "human_review",
     "generate_report",
     "grounding_gate",
+    "reflexion_audit",    # self-critique & lesson generation
+    "self_learning",      # Hermes closed-loop skill adaptation
 ]
 
 
@@ -101,6 +113,12 @@ def build_graph(metrics: MetricsCollector, entry_point: str = "ingest", simulate
     price_agent = PriceDataAgent(metrics)
     correlation_agent = MarketCorrelationAgent(metrics)
     grounding_agent = GroundingGateAgent(metrics)
+    discrepancy_agent = DiscrepancyAuditorAgent()
+    geopolitical_agent = GeopoliticalRiskAgent(metrics)
+    vibe_quant_agent = VibeQuantAgent()
+    risk_sentinel_agent = RiskSentinelAgent()
+    reflexion_agent = ReflexionAgent(metrics)
+    hermes_agent = HermesSelfLearningAgent(metrics)
 
     def checkpointed(node_name: str, state: Any) -> None:
         with get_session() as session:
@@ -359,8 +377,80 @@ def build_graph(metrics: MetricsCollector, entry_point: str = "ingest", simulate
             logger.exception("GroundingGate node failed — publishing report without verification")
             return {}
 
+    # ---- Specialized Domain Nodes --------------------------------------------
+    def node_geopolitical_risk(state: PipelineState) -> Dict[str, Any]:
+        try:
+            entity_names = [e.canonical_name for e in state.get("entities", [])]
+            geo_res = geopolitical_agent.run({"entities": entity_names or ["NVDA", "AAPL", "XOM"]})
+            update = {"geopolitical_risks": [geo_res]}
+            checkpointed("geopolitical_risk", {**state, **update})
+            return update
+        except Exception:
+            logger.exception("GeopoliticalRisk node failed — continuing")
+            return {"geopolitical_risks": []}
+
+    def node_sec_auditor(state: PipelineState) -> Dict[str, Any]:
+        try:
+            with get_session() as session:
+                run_id = state.get("run_id", "")
+                insights = _all_insights(session, run_id)
+                audit_summary = discrepancy_agent.run(session, insights, state.get("entities", []))
+            records = getattr(audit_summary, "audit_records", [])
+            update = {"sec_discrepancies": records}
+            checkpointed("sec_auditor", {**state, **update})
+            return update
+        except Exception:
+            logger.exception("SecAuditor node failed — continuing")
+            return {"sec_discrepancies": []}
+
+    def node_vibe_quant(state: PipelineState) -> Dict[str, Any]:
+        try:
+            first_ticker = "NVDA"
+            entities = state.get("entities", [])
+            if entities:
+                first_ticker = getattr(entities[0], "canonical_name", "NVDA")
+            vq_res = vibe_quant_agent.analyze_ticker(first_ticker)
+            update = {"vibe_quant_signals": {"ticker": first_ticker, "stance": vq_res.stance, "rsi": vq_res.rsi_14}}
+            checkpointed("vibe_quant", {**state, **update})
+            return update
+        except Exception:
+            logger.exception("VibeQuant node failed — continuing")
+            return {"vibe_quant_signals": {}}
+
+    def node_risk_sentinel(state: PipelineState) -> Dict[str, Any]:
+        try:
+            risk_res = risk_sentinel_agent.evaluate_portfolio_risk("SPY")
+            update = {"risk_hedges": {"var_95": risk_res.var_95, "circuit_breaker": risk_res.circuit_breaker_active, "hedges": risk_res.recommended_hedges}}
+            checkpointed("risk_sentinel", {**state, **update})
+            return update
+        except Exception:
+            logger.exception("RiskSentinel node failed — continuing")
+            return {"risk_hedges": {}}
+
+    def node_reflexion(state: PipelineState) -> Dict[str, Any]:
+        try:
+            with get_session() as session:
+                run_id = state.get("run_id", "")
+                insights = _all_insights(session, run_id)
+                critique = reflexion_agent.run(session, insights, state.get("entities", []))
+            update = {"reflexion_critique": critique}
+            checkpointed("reflexion_audit", {**state, **update})
+            return update
+        except Exception:
+            logger.exception("Reflexion node failed — continuing")
+            return {"reflexion_critique": {}}
+
+    def node_self_learning(state: PipelineState) -> Dict[str, Any]:
+        try:
+            summary = hermes_agent.run()
+            checkpointed("self_learning", {**state})
+            return {"metrics_summary": summary}
+        except Exception:
+            logger.exception("SelfLearning node failed — continuing")
+            return {}
+
     # ---- Graph assembly -------------------------------------------------------
-    graph = StateGraph(PipelineState)
+    graph = StateGraph(cast(Any, PipelineState))
 
     # v1 nodes
     graph.add_node("ingest", node_ingest)
@@ -383,6 +473,14 @@ def build_graph(metrics: MetricsCollector, entry_point: str = "ingest", simulate
     graph.add_node("market_correlation", node_market_correlation)
     graph.add_node("grounding_gate", node_grounding_gate)
 
+    # Specialized domain nodes
+    graph.add_node("geopolitical_risk", node_geopolitical_risk)
+    graph.add_node("sec_auditor", node_sec_auditor)
+    graph.add_node("vibe_quant", node_vibe_quant)
+    graph.add_node("risk_sentinel", node_risk_sentinel)
+    graph.add_node("reflexion_audit", node_reflexion)
+    graph.add_node("self_learning", node_self_learning)
+
     # ---- Edge wiring ----------------------------------------------------------
     graph.set_entry_point(entry_point)
 
@@ -402,8 +500,9 @@ def build_graph(metrics: MetricsCollector, entry_point: str = "ingest", simulate
     # deep_search (when triggered) feeds new sources into rag_retrieval
     graph.add_edge("deep_search", "rag_retrieval")
 
-    # rag_retrieval always feeds into confidence scoring
-    graph.add_edge("rag_retrieval", "score_confidence")
+    # rag_retrieval feeds into geopolitical risk assessment, then confidence scoring
+    graph.add_edge("rag_retrieval", "geopolitical_risk")
+    graph.add_edge("geopolitical_risk", "score_confidence")
 
     # After confidence: optionally price_enrich, then market_correlation
     graph.add_conditional_edges("score_confidence", supervisor.route_after_confidence_v2)
@@ -414,22 +513,30 @@ def build_graph(metrics: MetricsCollector, entry_point: str = "ingest", simulate
     # market_correlation → forecast
     graph.add_edge("market_correlation", "forecast_trends")
 
-    # After forecast: human review gate (unchanged logic)
-    graph.add_conditional_edges("forecast_trends", supervisor.route_after_confidence)
+    # forecast_trends -> sec_auditor -> vibe_quant -> risk_sentinel
+    graph.add_edge("forecast_trends", "sec_auditor")
+    graph.add_edge("sec_auditor", "vibe_quant")
+    graph.add_edge("vibe_quant", "risk_sentinel")
+
+    # After risk_sentinel: human review gate
+    graph.add_conditional_edges("risk_sentinel", supervisor.route_after_confidence)
 
     # Human review path
     graph.add_conditional_edges("human_review", supervisor.route_after_human_review)
 
-    # Report → grounding gate → END
+    # Report → grounding gate → reflexion_audit → self_learning → END
     graph.add_edge("generate_report", "grounding_gate")
-    graph.add_edge("grounding_gate", END)
+    graph.add_edge("grounding_gate", "reflexion_audit")
+    graph.add_edge("reflexion_audit", "self_learning")
+    graph.add_edge("self_learning", END)
 
     # Error and exit paths
     graph.add_edge("handle_error", END)
     graph.add_edge("end_rejected", END)
     graph.add_edge("end_pending", END)
 
-    return graph.compile()
+    interrupt_before = ["human_review"] if getattr(settings, "human_review_mode", "auto") == "interrupt" else None
+    return graph.compile(interrupt_before=interrupt_before)
 
 
 def run_pipeline(

@@ -1683,18 +1683,20 @@ def render_stocks_section() -> str:
     chips_html = []
     for s in stk.get("trending", [])[:5]:
         chg_fg = "#22c55e" if s.get("up") else "#ef4444"
-        sign = "+" if s.get("pct", 0) >= 0 else ""
+        pct_val = float(s.get("pct") or 0.0)
+        sign = "+" if pct_val >= 0 else ""
         chips_html.append(f"""
         <div class="sig-trend-chip">
             <div style="font-weight: 700; font-size: 13px; color: #ffffff;">{s['sym']}</div>
             <div style="font-size: 10px; color: #71717a;">{s['name']}</div>
-            <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 800; color: {chg_fg}; margin-top: 4px;">{s['price']} <span style="font-size: 10px;">{sign}{s['pct']:.2f}%</span></div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 800; color: {chg_fg}; margin-top: 4px;">{s['price']} <span style="font-size: 10px;">{sign}{pct_val:.2f}%</span></div>
         </div>
         """)
 
     gainers_rows = []
     for s in stk.get("gainers", [])[:5]:
-        sign = "+" if s.get("pct", 0) >= 0 else ""
+        pct_val = float(s.get("pct") or 0.0)
+        sign = "+" if pct_val >= 0 else ""
         gainers_rows.append(f"""
         <div class="sig-table-row">
             <div>
@@ -1703,14 +1705,15 @@ def render_stocks_section() -> str:
             </div>
             <div style="text-align: right; display: flex; align-items: center; gap: 12px;">
                 <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: #ffffff;">{s['price']}</span>
-                <span class="sig-pill-gain">{sign}{s['pct']:.2f}%</span>
+                <span class="sig-pill-gain">{sign}{pct_val:.2f}%</span>
             </div>
         </div>
         """)
 
     losers_rows = []
     for s in stk.get("losers", [])[:5]:
-        sign = "+" if s.get("pct", 0) >= 0 else ""
+        pct_val = float(s.get("pct") or 0.0)
+        sign = "+" if pct_val >= 0 else ""
         losers_rows.append(f"""
         <div class="sig-table-row">
             <div>
@@ -1719,7 +1722,7 @@ def render_stocks_section() -> str:
             </div>
             <div style="text-align: right; display: flex; align-items: center; gap: 12px;">
                 <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: #ffffff;">{s['price']}</span>
-                <span class="sig-pill-loss">{sign}{s['pct']:.2f}%</span>
+                <span class="sig-pill-loss">{sign}{pct_val:.2f}%</span>
             </div>
         </div>
         """)
@@ -1793,18 +1796,20 @@ def render_crypto_section() -> str:
     chips_html = []
     for c in cry.get("trending", [])[:5]:
         chg_fg = "#22c55e" if c.get("up") else "#ef4444"
-        sign = "+" if c.get("pct", 0) >= 0 else ""
+        pct_val = float(c.get("pct") or 0.0)
+        sign = "+" if pct_val >= 0 else ""
         chips_html.append(f"""
         <div class="sig-trend-chip">
             <div style="font-weight: 700; font-size: 13px; color: #ffffff;">{c['sym']}</div>
             <div style="font-size: 10px; color: #71717a;">{c['name']}</div>
-            <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 800; color: {chg_fg}; margin-top: 4px;">{c['price_str']} <span style="font-size: 10px;">{sign}{c['pct']:.2f}%</span></div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 800; color: {chg_fg}; margin-top: 4px;">{c['price_str']} <span style="font-size: 10px;">{sign}{pct_val:.2f}%</span></div>
         </div>
         """)
 
     gainers_rows = []
     for c in cry.get("gainers", [])[:5]:
-        sign = "+" if c.get("pct", 0) >= 0 else ""
+        pct_val = float(c.get("pct") or 0.0)
+        sign = "+" if pct_val >= 0 else ""
         gainers_rows.append(f"""
         <div class="sig-table-row">
             <div>
@@ -1813,14 +1818,15 @@ def render_crypto_section() -> str:
             </div>
             <div style="text-align: right; display: flex; align-items: center; gap: 12px;">
                 <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: #ffffff;">{c['price_str']}</span>
-                <span class="sig-pill-gain">{sign}{c['pct']:.2f}%</span>
+                <span class="sig-pill-gain">{sign}{pct_val:.2f}%</span>
             </div>
         </div>
         """)
 
     losers_rows = []
     for c in cry.get("losers", [])[:5]:
-        sign = "+" if c.get("pct", 0) >= 0 else ""
+        pct_val = float(c.get("pct") or 0.0)
+        sign = "+" if pct_val >= 0 else ""
         losers_rows.append(f"""
         <div class="sig-table-row">
             <div>
@@ -1829,7 +1835,7 @@ def render_crypto_section() -> str:
             </div>
             <div style="text-align: right; display: flex; align-items: center; gap: 12px;">
                 <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: #ffffff;">{c['price_str']}</span>
-                <span class="sig-pill-loss">{sign}{c['pct']:.2f}%</span>
+                <span class="sig-pill-loss">{sign}{pct_val:.2f}%</span>
             </div>
         </div>
         """)
@@ -1948,14 +1954,14 @@ def render_bonds_dashboard() -> str:
         ]
         mc = {"us_10y": "4.96%", "us_30y": "5.34%", "us_2y": "3.94%"}
 
-    b_map = {b["tenor"]: b for b in bonds}
-    y_2y = b_map.get("2Y", {}).get("yield", "3.94%")
-    y_10y = b_map.get("10Y", {}).get("yield", "4.96%")
-    y_30y = b_map.get("30Y", {}).get("yield", "5.34%")
+    b_map = {str(b.get("tenor", "")): b for b in bonds}
+    y_2y = str(b_map.get("2Y", {}).get("yield", "3.94%"))
+    y_10y = str(b_map.get("10Y", {}).get("yield", "4.96%"))
+    y_30y = str(b_map.get("30Y", {}).get("yield", "5.34%"))
 
-    chg_2y = b_map.get("2Y", {}).get("chg", "+9.7bps")
-    chg_10y = b_map.get("10Y", {}).get("chg", "+1.3bps")
-    chg_30y = b_map.get("30Y", {}).get("chg", "-2.4bps")
+    chg_2y = str(b_map.get("2Y", {}).get("chg", "+9.7bps"))
+    chg_10y = str(b_map.get("10Y", {}).get("chg", "+1.3bps"))
+    chg_30y = str(b_map.get("30Y", {}).get("chg", "-2.4bps"))
 
     try:
         val_10 = float(y_10y.replace("%", "").strip())
@@ -2241,8 +2247,8 @@ def render_benchmark_bars() -> str:
     return clean_html(raw_html)
 
 
-def render_tradingview_widget(symbol: str = "NVDA", height: int = 500) -> str:
-    """TradingView real-time interactive institutional candlestick & volume chart."""
+def render_tradingview_widget(symbol: str = "NVDA", height: int = 500, interval: str = "1") -> str:
+    """TradingView real-time interactive institutional candlestick & volume chart with live streaming ticks."""
     tv_symbol_map = {
         "US30Y": "TVC:US30Y",
         "US10Y": "TVC:US10Y",
@@ -2268,8 +2274,15 @@ def render_tradingview_widget(symbol: str = "NVDA", height: int = 500) -> str:
         "QQQ": "NASDAQ:QQQ",
         "DIA": "AMEX:DIA",
         "IWM": "AMEX:IWM",
-        "CL1!": "NYMEX:CL1!",
-        "GC1!": "COMEX:GC1!",
+        "SPX": "TVC:SPX",
+        "SP500": "TVC:SPX",
+        "CL1!": "TVC:USOIL",
+        "OIL": "TVC:USOIL",
+        "CRUDE": "TVC:USOIL",
+        "BRENT": "TVC:UKOIL",
+        "GC1!": "TVC:GOLD",
+        "GOLD": "TVC:GOLD",
+        "SILVER": "TVC:SILVER",
         "BTCUSD": "BINANCE:BTCUSDT",
         "BTC": "BINANCE:BTCUSDT",
         "ETHUSD": "BINANCE:ETHUSDT",
@@ -2293,11 +2306,18 @@ def render_tradingview_widget(symbol: str = "NVDA", height: int = 500) -> str:
     else:
         tv_symbol = f"NASDAQ:{sym_clean}"
 
+    # Interval normalization (1m, 5m, 15m, 60m, D)
+    int_str = interval.strip()
+
     raw_html = f"""
-    <div style="height: {height}px; width: 100%; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.08); background: #06070c; box-shadow: 0 8px 32px rgba(0,0,0,0.6);">
+    <div style="height: {height}px; width: 100%; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.08); background: #06070c; box-shadow: 0 8px 32px rgba(0,0,0,0.6); position: relative;">
+      <div style="position: absolute; top: 12px; right: 18px; z-index: 10; display: flex; align-items: center; gap: 6px; pointer-events: none; background: rgba(6,7,12,0.85); padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(34,197,94,0.3);">
+        <span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 8px #22c55e;"></span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; color: #22c55e; letter-spacing: 0.5px;">LIVE FEED ({int_str}M)</span>
+      </div>
       <iframe 
         style="width: 100%; height: 100%; border: none; display: block;"
-        src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_widget&symbol={tv_symbol}&interval=D&hidesidetoolbar=0&symboledit=1&saveimage=1&toolbarbg=06070c&theme=dark&style=1&timezone=exchange&studies=[]"
+        src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_widget&symbol={tv_symbol}&interval={int_str}&hidesidetoolbar=0&symboledit=1&saveimage=0&toolbarbg=06070c&theme=dark&style=1&timezone=exchange&withdateranges=1&studies=[]"
         allowfullscreen>
       </iframe>
     </div>

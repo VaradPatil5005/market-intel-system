@@ -6,7 +6,8 @@ v2.1: Added seed, config_snapshot, input_snapshot for reproducibility;
 """
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, TypedDict
+from typing import Any, Dict, List, Optional
+from typing_extensions import TypedDict
 
 
 class PipelineState(TypedDict, total=False):
@@ -46,6 +47,18 @@ class PipelineState(TypedDict, total=False):
 
     # v2: user personalization context
     user_context: Dict[str, Any]       # from QueryMemoryAgent.load_user_context()
+
+    # Specialized domain intelligence fields
+    sec_discrepancies: List[Any]       # from DiscrepancyAuditorAgent
+    geopolitical_risks: List[Any]      # from GeopoliticalRiskAgent
+    macro_rates: Dict[str, Any]        # from MacroRatesAgent
+    global_macro: Dict[str, Any]       # from GlobalMacroAgent
+    vibe_quant_signals: Dict[str, Any] # from VibeQuantAgent
+    liquidity_order_flow: Dict[str, Any] # from LiquidityOrderFlowAgent
+    risk_hedges: Dict[str, Any]        # from RiskSentinelAgent
+    competitor_benchmarks: List[Any]   # from CompetitorAgent
+    reflexion_critique: Dict[str, Any] # from ReflexionAgent
+    execution_orders: List[Any]        # from ExecutionRouterAgent
 
     # v2.1: reproducibility metadata (populated by run_pipeline)
     seed: Optional[int]                # random seed used for this run

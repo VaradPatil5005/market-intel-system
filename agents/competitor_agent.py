@@ -131,3 +131,8 @@ class CompetitorMonitorAgent(BaseAgent):
                     break  # one hit per signal_type per source is enough
 
         return found
+
+
+# Alias for institutional matrix naming consistency
+CompetitorAgent = CompetitorMonitorAgent
+

@@ -32,6 +32,7 @@ import requests
 from agents.base import BaseAgent
 from database.models import RawSource
 from database.session import Repository, Session
+from utils.agent_reach_service import reach_service
 from utils.config import settings
 from utils.helpers import iso_now, new_id, normalize_text
 from utils.logging_setup import get_logger
@@ -73,8 +74,8 @@ class DeepSearchAgent(BaseAgent):
         Returns:
             List of newly-created RawSource records (already persisted to session)
         """
-        if not settings.enable_deep_search and not settings.enable_sec_edgar:
-            logger.info("DeepSearchAgent: both deep_search and sec_edgar disabled — skipping.")
+        if not settings.enable_deep_search and not settings.enable_sec_edgar and not settings.enable_agent_reach:
+            logger.info("DeepSearchAgent: deep search, sec_edgar, and agent_reach disabled — skipping.")
             return []
 
         with self.run_tracked("deep_search"):
@@ -83,17 +84,26 @@ class DeepSearchAgent(BaseAgent):
             for entity_name in anomalous_entities:
                 logger.info(f"DeepSearchAgent: searching for anomalous entity '{entity_name}'")
 
-                if settings.enable_deep_search:
+                # 1. Agent Reach Multi-Platform Research Engine
+                if settings.enable_agent_reach:
+                    reach_sources = self._agent_reach_search(entity_name)
+                    all_sources.extend(self._to_raw_sources(session, reach_sources, entity_name))
+
+                # 2. Traditional Web Search (Tavily or DuckDuckGo)
+                if settings.enable_deep_search and not settings.enable_agent_reach:
                     web_results = self._web_search(entity_name)
                     all_sources.extend(self._to_raw_sources(session, web_results, entity_name))
 
+                # 3. SEC EDGAR Material Event Filings (Form 8-K)
                 if settings.enable_sec_edgar:
                     sec_results = self._sec_edgar_search(entity_name)
                     all_sources.extend(self._to_raw_sources(session, sec_results, entity_name))
 
-                reddit_results = self._reddit_search(entity_name)
-                if reddit_results:
-                    all_sources.extend(self._to_raw_sources(session, reddit_results, entity_name))
+                # 4. Reddit direct fallback
+                if not settings.enable_agent_reach:
+                    reddit_results = self._reddit_search(entity_name)
+                    if reddit_results:
+                        all_sources.extend(self._to_raw_sources(session, reddit_results, entity_name))
 
             self.audit(
                 session,
@@ -107,6 +117,70 @@ class DeepSearchAgent(BaseAgent):
                 f"for {len(anomalous_entities)} anomalous entities."
             )
             return all_sources
+
+    # ------------------------------------------------------------------
+    def _agent_reach_search(self, entity_name: str) -> List[Dict[str, Any]]:
+        """Multi-platform discovery via Agent-Reach engine."""
+        results: List[Dict[str, Any]] = []
+        try:
+            # A. Web Search (Jina / Exa / DDG)
+            web_hits = reach_service.search_web(f"{entity_name} stock market catalysts risk", max_results=3)
+            for hit in web_hits:
+                results.append({
+                    "source_name": f"AgentReach/{hit.get('source', 'Web')}",
+                    "source_type": "deep_search_reach_web",
+                    "url": hit.get("url", ""),
+                    "title": hit.get("title", f"{entity_name} Intelligence"),
+                    "content": hit.get("snippet", ""),
+                    "published_at": "",
+                })
+
+            # B. Xueqiu equity metrics & trending posts
+            if settings.agent_reach_xueqiu_enabled:
+                stock_intel = reach_service.get_stock_intel(entity_name)
+                quote = stock_intel.get("quote", {})
+                if quote and quote.get("current"):
+                    curr = quote.get("current")
+                    pct = quote.get("percent", 0.0)
+                    pe = quote.get("pe_ttm", "N/A")
+                    mc = quote.get("market_capital", "N/A")
+                    results.append({
+                        "source_name": "AgentReach/Xueqiu",
+                        "source_type": "equity_telemetry_xueqiu",
+                        "url": f"https://xueqiu.com/S/{entity_name}",
+                        "title": f"{entity_name} — Xueqiu Equity Telemetry (Price: {curr}, Change: {pct}%)",
+                        "content": normalize_text(
+                            f"Live quote for {entity_name}: Price ${curr}, intraday change {pct}%, "
+                            f"PE(TTM): {pe}, Market Cap: {mc}. Xueqiu institutional and retail sentiment tracking active."
+                        ),
+                        "published_at": "",
+                    })
+                for post in stock_intel.get("trending_posts", [])[:2]:
+                    results.append({
+                        "source_name": "AgentReach/Xueqiu",
+                        "source_type": "social_sentiment_xueqiu",
+                        "url": post.get("url", "https://xueqiu.com"),
+                        "title": post.get("title") or f"{entity_name} Discussion",
+                        "content": normalize_text(post.get("text", "")),
+                        "published_at": "",
+                    })
+
+            # C. Social community discussions
+            if settings.agent_reach_reddit_enabled or settings.agent_reach_twitter_enabled:
+                socials = reach_service.search_social_discussions(entity_name, limit=2)
+                for s in socials:
+                    results.append({
+                        "source_name": f"AgentReach/{s.get('platform', 'Social')}",
+                        "source_type": "social_sentiment_reach",
+                        "url": s.get("url", ""),
+                        "title": s.get("title", f"{entity_name} Social Post"),
+                        "content": normalize_text(s.get("content", "")),
+                        "published_at": "",
+                    })
+
+        except Exception as exc:
+            logger.warning(f"Agent-Reach discovery notice for '{entity_name}': {exc}")
+        return results
 
     # ------------------------------------------------------------------
     def _web_search(self, entity_name: str) -> List[Dict[str, Any]]:
@@ -192,8 +266,8 @@ class DeepSearchAgent(BaseAgent):
         """Search SEC EDGAR for recent 8-K material event filings (always free)."""
         results = []
         try:
-            from datetime import datetime, timedelta  # noqa: PLC0415
-            start_date = (datetime.utcnow() - timedelta(days=settings.sec_edgar_lookback_days)).strftime("%Y-%m-%d")
+            from datetime import datetime, timedelta, timezone  # noqa: PLC0415
+            start_date = (datetime.now(timezone.utc) - timedelta(days=settings.sec_edgar_lookback_days)).strftime("%Y-%m-%d")
             url = f"https://efts.sec.gov/LATEST/search-index?q=%22{quote_plus(entity_name)}%22&forms=8-K&dateRange=custom&startdt={start_date}"
             resp = requests.get(
                 url,

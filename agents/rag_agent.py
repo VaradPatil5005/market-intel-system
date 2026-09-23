@@ -34,6 +34,8 @@ from utils.helpers import iso_now, new_id
 
 insight_repo = Repository(Insight)
 
+CHUNK_SIZE = 512
+CHUNK_OVERLAP = 64
 TOP_K = 2
 SIMILARITY_MIN = 0.08
 CHROMA_SIMILARITY_MIN = 0.35  # cosine similarity on embeddings is a different scale than TF-IDF overlap
@@ -45,10 +47,70 @@ _embedding_model = None
 _chroma_load_attempted = False
 
 
+def _recursive_character_chunk(
+    text: str, chunk_size: int = CHUNK_SIZE, chunk_overlap: int = CHUNK_OVERLAP
+) -> List[str]:
+    """
+    Standard recursive character chunking splitting on paragraph, newline, sentence, and word boundaries.
+    Ensures semantically coherent text segments under the target token/char budget.
+    """
+    if len(text) <= chunk_size:
+        return [text]
+
+    chunks: List[str] = []
+    start = 0
+    while start < len(text):
+        end = start + chunk_size
+        if end >= len(text):
+            chunks.append(text[start:].strip())
+            break
+
+        # Look for natural split boundaries: double newline, single newline, sentence end, space
+        split_idx = -1
+        for sep in ["\n\n", "\n", ". ", " "]:
+            candidate = text.rfind(sep, start, end)
+            if candidate != -1 and candidate > start + (chunk_size // 3):
+                split_idx = candidate + len(sep)
+                break
+
+        if split_idx == -1:
+            split_idx = end
+
+        chunk = text[start:split_idx].strip()
+        if chunk:
+            chunks.append(chunk)
+        start = max(start + 1, split_idx - chunk_overlap)
+
+    return chunks
+
+
+def _load_historical_chunks(reports_dir: Path) -> List[Tuple[str, str, Dict[str, Any]]]:
+    """
+    Loads all documents from disk and decomposes them into chunked passages with metadata.
+    Returns: list of (chunk_id, chunk_text, metadata_dict).
+    """
+    if not reports_dir.exists():
+        return []
+    chunks: List[Tuple[str, str, Dict[str, Any]]] = []
+    for path in sorted(reports_dir.glob("*.md")) + sorted(reports_dir.glob("*.txt")):
+        content = path.read_text(encoding="utf-8")
+        passages = _recursive_character_chunk(content)
+        for idx, passage in enumerate(passages):
+            chunk_id = f"{path.stem}_chk_{idx:02d}"
+            meta = {
+                "source_file": path.name,
+                "chunk_index": idx,
+                "total_chunks": len(passages),
+                "char_length": len(passage),
+            }
+            chunks.append((chunk_id, passage, meta))
+    return chunks
+
+
 def _get_chroma_collection(reports_dir: Path):
     """Best-effort loader that builds (or reopens) a persistent Chroma
-    collection embedding every historical report. Returns None (never
-    raises) on any failure — callers must treat None as "use TF-IDF"."""
+    collection embedding every historical report chunk. Returns None (never
+    raises) on any failure — callers must treat None as 'use TF-IDF'."""
     global _chroma_client, _chroma_collection, _embedding_model, _chroma_load_attempted
     if _chroma_load_attempted:
         return _chroma_collection
@@ -62,16 +124,16 @@ def _get_chroma_collection(reports_dir: Path):
 
         _embedding_model = SentenceTransformer(settings.embedding_model_name)
         _chroma_client = chromadb.PersistentClient(path=str(settings.chroma_dir))
-        _chroma_collection = _chroma_client.get_or_create_collection("historical_reports")
+        _chroma_collection = _chroma_client.get_or_create_collection("historical_reports_chunked")
 
-        # (Re)index historical documents. Cheap idempotency check: skip if
-        # the collection already has as many docs as we can see on disk.
-        docs = _load_historical_documents(reports_dir)
-        if docs and _chroma_collection.count() < len(docs):
-            embeddings = _embedding_model.encode([d[1] for d in docs]).tolist()
+        # (Re)index historical document chunks
+        chunks = _load_historical_chunks(reports_dir)
+        if chunks and _chroma_collection.count() < len(chunks):
+            embeddings = _embedding_model.encode([c[1] for c in chunks]).tolist()
             _chroma_collection.upsert(
-                ids=[d[0] for d in docs],
-                documents=[d[1] for d in docs],
+                ids=[c[0] for c in chunks],
+                documents=[c[1] for c in chunks],
+                metadatas=[c[2] for c in chunks],
                 embeddings=embeddings,
             )
     except Exception:
@@ -80,12 +142,8 @@ def _get_chroma_collection(reports_dir: Path):
 
 
 def _load_historical_documents(reports_dir: Path) -> List[Tuple[str, str]]:
-    if not reports_dir.exists():
-        return []
-    docs = []
-    for path in sorted(reports_dir.glob("*.md")) + sorted(reports_dir.glob("*.txt")):
-        docs.append((path.name, path.read_text(encoding="utf-8")))
-    return docs
+    chunks = _load_historical_chunks(reports_dir)
+    return [(c[0], c[1]) for c in chunks]
 
 
 class RagInsightAgent(BaseAgent):

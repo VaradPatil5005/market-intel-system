@@ -429,18 +429,28 @@ class LiveNewsAgent:
         matched = [
             item for item in news
             if cat_norm in item.get("category", "").lower()
-            or any(cat_norm in t.lower() for t in item.get("tags", []))
+            or item.get("category", "").lower() in cat_norm
+            or any(t.lower() in cat_norm or cat_norm in t.lower() for t in item.get("tags", []))
         ]
-        # Guarantee full rich view: if matched is fewer than 6, backfill with top fresh breaking news
-        if len(matched) < 6:
-            seen_ids = {m["id"] for m in matched}
-            for item in news:
-                if item["id"] not in seen_ids:
-                    matched.append(item)
-                    seen_ids.add(item["id"])
-                    if len(matched) >= 6:
-                        break
         return matched
+
+    def read_article_full_text(self, url: str) -> Dict[str, Any]:
+        """
+        Deep-reads full article text from a news URL using Agent-Reach Jina Reader.
+        Useful for Kim Voice Agent executive briefings on breaking stories.
+        """
+        try:
+            from utils.agent_reach_service import reach_service
+            return reach_service.read_url(url)
+        except Exception as exc:
+            logger.warning(f"Failed to read full article text for {url}: {exc}")
+            return {
+                "status": "error",
+                "url": url,
+                "title": "",
+                "content": "",
+                "error": str(exc),
+            }
 
 
 # Singleton instance for system-wide access
